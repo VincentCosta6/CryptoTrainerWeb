@@ -9,7 +9,7 @@ let cryptoWatchSocketClient: any
 const init = () => {
   console.log('here')
 
-  cryptoWatchSocketClient = new WebSocket(`ws://localhost:8082`);
+  cryptoWatchSocketClient = new WebSocket(`ws://76.88.89.155:8082`);
 
   cryptoWatchSocketClient.onopen = () => {
     const selectedCrypto = store.getState().coins.selectedCoin

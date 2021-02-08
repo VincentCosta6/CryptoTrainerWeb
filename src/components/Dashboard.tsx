@@ -8,6 +8,7 @@ import { connect, ConnectedProps } from 'react-redux'
 import { useAppDispatch } from '../redux/store'
 import { setDollars } from '../redux/reducers/user'
 import { addCoinQuantity, setCoinQuantity } from '../redux/reducers/usersCoins'
+import { addTrade } from '../redux/reducers/trades'
 import { fetchCoinPrice, setSubscriptions, setTimeInterval } from '../redux/reducers/price'
 import { Button, CircularProgress, InputBase, MenuItem, Select, TextField } from '@material-ui/core'
 import Paper from '@material-ui/core/Paper';
@@ -15,6 +16,10 @@ import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 import ws from '../websocket/cryptoPrice2'
+
+function numberWithCommas(x: any) {
+    return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+}
 
 const chartOptions = {
     chart: {
@@ -89,7 +94,7 @@ const Dashboard = (props: Props) => {
 
     const handleBuy = () => {
         setBuyLoading(true)
-        fetch(`http://76.88.89.155:8080/coins/buy/${props.selectedCrypto}`, {
+        fetch(`http://localhost:8080/coins/buy/${props.selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -104,6 +109,7 @@ const Dashboard = (props: Props) => {
                     ticker: props.selectedCrypto,
                     quantity: updateInfo.newCoinAmount
                 }))
+                dispatch(addTrade(updateInfo.trade))
                 dispatch(setDollars(updateInfo.newDollars))
                 setBuyLoading(false)
                 setBuyField('0')
@@ -116,7 +122,7 @@ const Dashboard = (props: Props) => {
 
     const handleSell = () => {
         setSellLoading(true)
-        fetch(`http://76.88.89.155:8080/coins/sell/${props.selectedCrypto}`, {
+        fetch(`http://localhost:8080/coins/sell/${props.selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -131,6 +137,7 @@ const Dashboard = (props: Props) => {
                     ticker: props.selectedCrypto,
                     quantity: updateInfo.newCoinAmount
                 }))
+                dispatch(addTrade(updateInfo.trade))
                 dispatch(setDollars(updateInfo.newDollars))
                 setSellLoading(false)
                 setSellField('0')
@@ -146,10 +153,10 @@ const Dashboard = (props: Props) => {
             <div style= {{ display: 'flex', height: '100%' }}>
                 <div style = {{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10, height: '100%' }}>
                     <div style = {{ borderBottom: '1px solid #262d34', marginBottom: 15 }}>
-                        <h2>{tickerMap[props.selectedCrypto]}: ${props.lastPrice}</h2>
+                        <h2>{tickerMap[props.selectedCrypto]}: ${numberWithCommas(props.lastPrice)}</h2>
                         <p>Balance:</p>
-                        <p>${Number(props.dollarBalance).toFixed(2)}</p>
-                        <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {Number(props.coinBalance[props.selectedCrypto]).toFixed(6)}</p>
+                        <p>${numberWithCommas(Number(props.dollarBalance).toFixed(2))}</p>
+                        <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommas(Number(props.coinBalance[props.selectedCrypto]).toFixed(6))}</p>
                     </div>
                     <ToggleButtonGroup
                         style = {{ width: '100%', maxHeight: 50 }}
@@ -226,15 +233,14 @@ const Dashboard = (props: Props) => {
                                 {
                                     buyField && (
                                         <div>
-                                            <h2>Details</h2>
                                             <div style={{ marginLeft: 7 }}>
-                                                <div>
-                                                    <h2 style={{ marginBottom: 3 }}>{nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
-                                                    <p style={{ marginTop: 0, marginLeft: 10}}>+{Number(Number(buyField) / props.lastPrice).toFixed(6)}</p>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <h2 style={{ marginBottom: 3, marginTop: 0 }}>{nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
+                                                    <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3}}>+{numberWithCommas(Number(Number(buyField) / props.lastPrice).toFixed(6))}</p>
                                                 </div>
-                                                <div>
-                                                    <h2 style={{ marginBottom: 3 }}>Remaining </h2>
-                                                    <p style={{ marginTop: 0, marginLeft: 10 }}>${Number(Number(props.dollarBalance) - Number(buyField)).toFixed(6)}</p>
+                                                <div style={{ display: 'flex', alignItems: 'center', marginTop: 5 }}>
+                                                    <h2 style={{ marginBottom: 3, marginTop: 0 }}>Remaining </h2>
+                                                    <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3 }}>${numberWithCommas(Number(Number(props.dollarBalance) - Number(buyField)).toFixed(2))}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -289,12 +295,12 @@ const Dashboard = (props: Props) => {
                                             <div style={{ marginLeft: 7 }}>
                                                 <div>
                                                     <h2 style={{ marginBottom: 3 }}>USD</h2>
-                                                    <p style={{ marginTop: 0, marginLeft: 10}}>+ ${Number(Number(sellField) * props.lastPrice).toFixed(6)}</p>
-                                                    <p style={{ marginTop: 0, marginLeft: 10}}>New Balance: ${Number(Number(sellField) * props.lastPrice + props.dollarBalance).toFixed(6)}</p>
+                                                    <p style={{ marginTop: 0, marginLeft: 10}}>+ ${numberWithCommas(Number(Number(sellField) * props.lastPrice).toFixed(2))}</p>
+                                                    <p style={{ marginTop: 0, marginLeft: 10}}>New Balance: ${numberWithCommas(Number(Number(sellField) * props.lastPrice + props.dollarBalance).toFixed(2))}</p>
                                                 </div>
                                                 <div>
                                                     <h2 style={{ marginBottom: 3 }}>Remaining {nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
-                                                    <p style={{ marginTop: 0, marginLeft: 10 }}>{Number(props.coinBalance[props.selectedCrypto] - Number(sellField)).toFixed(6)}</p>
+                                                    <p style={{ marginTop: 0, marginLeft: 10 }}>{numberWithCommas(Number(props.coinBalance[props.selectedCrypto] - Number(sellField)).toFixed(6))}</p>
                                                 </div>
                                             </div>
                                         </div>

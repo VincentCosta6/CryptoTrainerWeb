@@ -4,6 +4,7 @@ import { useAppDispatch } from '../redux/store'
 import { fetchUserByUUID } from '../redux/reducers/user'
 import { fetchUsersCoinsByUUID } from '../redux/reducers/usersCoins'
 import { fetchCoinList } from '../redux/reducers/coins'
+import { fetchTradeList } from '../redux/reducers/trades'
 
 import { RootState } from '../redux/store'
 import { connect, ConnectedProps } from 'react-redux'
@@ -16,6 +17,7 @@ export const FetchUserInfo = (props: Props) => {
     useEffect(() => {
         dispatch(fetchUserByUUID(props.match.params.hashedUser))
         dispatch(fetchUsersCoinsByUUID(props.match.params.hashedUser))
+        dispatch(fetchTradeList(props.match.params.hashedUser))
         dispatch(fetchCoinList())
     }, [props.match.params.hashedUser])
 

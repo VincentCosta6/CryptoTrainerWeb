@@ -1,0 +1,32 @@
+header.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #060d13;
+  height: 50px;
+  border-bottom: 1px solid #262d34;
+
+  .drawer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: 15px;
+    color: white;
+    
+    svg {
+      cursor: pointer;
+    }
+  }
+
+  h2.title {
+    color: white;
+  }
+
+  p {
+    color: white
+  }
+}
+
+.space-right {
+  margin-right: 5px;
+}

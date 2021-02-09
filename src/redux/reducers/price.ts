@@ -60,7 +60,8 @@ export const fetchCoinPrice = createAsyncThunk(
 
 export interface ApexCandle {
     x: number
-    y: Array<number>
+    y: Array<number>,
+    z: Array<number>
 }
 
 interface SetCandlePayload {
@@ -123,9 +124,12 @@ const priceSlice = createSlice({
             /*x: new Date(candle[0] * 1000),
                 y: [candle[1], candle[2], candle[3], candle[4]]*/
 
+                console.log(action.payload.result[action.payload.intervalName])
+
             const candleSticks = action.payload.result[action.payload.intervalName].map((arr: any) => ({
                 x: arr[0] * 1000,
-                y: [arr[1], arr[2], arr[3], arr[4]]
+                y: [arr[1], arr[2], arr[3], arr[4]],
+                z: [arr[5], arr[6]]
             }))
             
             state.prices[action.payload.ticker][action.payload.intervalName] = candleSticks

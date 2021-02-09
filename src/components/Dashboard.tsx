@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
-import ApexChart from 'react-apexcharts'
+import ReactEcharts from 'echarts-for-react';
 
 import { RootState } from '../redux/store'
 
@@ -27,31 +27,6 @@ function numberWithCommasAndRounded(x: any, length: number) {
     return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
-const chartOptions = {
-    chart: {
-      type: 'candlestick',
-      height: 350,
-      animations: {
-        enabled: false
-      },
-    },
-    title: {
-      text: 'CandleStick Chart',
-      align: 'left'
-    },
-    xaxis: {
-      type: 'datetime'
-    },
-    yaxis: {
-      tooltip: {
-        enabled: true
-      }
-    },
-    markers: {
-        size: 0
-    }
-}
-
 const tickerMap: any = {
     'btcusd': 'BTC/USD',
     'ethusd': 'ETH/USD',
@@ -62,10 +37,16 @@ const nameMap: any = {
     'ethereum': 'Ethereum',
 }
 
+const charpOptions = {
+
+}
+
 const Dashboard = (props: Props) => {
+    const chart = useRef<any>()
     const dispatch = useAppDispatch()
 
     const [toggleInput, setToggleInput] = useState('buy')
+    const [chartData, setChartData] = useState<any>()
 
     const [series, setSeries] = useState<Array<any>>([])
     const [maxBuy, setMaxBuy] = useState(false)
@@ -98,10 +79,166 @@ const Dashboard = (props: Props) => {
         }))
     }, [props.selectedInterval, props.selectedCrypto])
 
+    useEffect(() => {
+        if (props.prices && props.prices[props.selectedCrypto] && props.prices[props.selectedCrypto][props.selectedInterval]) {
+            const intervals = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => candle.x)
+            // O: 0, H: 1, L: 2, C: 3
+            // O C L H
+            const sliceNumber = props.prices[props.selectedCrypto][props.selectedInterval].length - 100
+
+            const seriesData = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => [candle.y[0], candle.y[3], candle.y[2], candle.y[1]]).slice(sliceNumber)
+            const volumes = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => candle.z[0]).slice(sliceNumber)
+            const upColor = '#47b262'
+            const downColor = '#eb5454'
+
+            const options = {
+                grid: [
+                    {
+                        left: '5%',
+                        right: '1%',
+                        height: '50%'
+                    },
+                    {
+                        left: '5%',
+                        right: '1%',
+                        top: '60%',
+                        height: '35%'
+                    }
+                ],
+                axisPointer: {
+                    link: {xAxisIndex: 'all'},
+                    label: {
+                        backgroundColor: '#777'
+                    }
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    },
+                    borderWidth: 1,
+                    borderColor: '#ccc',
+                    padding: 10,
+                    textStyle: {
+                        color: '#000'
+                    },
+                    position: function (pos: any, params: any, el: any, elRect: any, size: any) {
+                        var obj = {top: 10};
+                        // @ts-ignore
+                        obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 30;
+                        return obj;
+                    }
+                    // extraCssText: 'width: 170px'
+                },
+                brush: {
+                    xAxisIndex: 'all',
+                    brushLink: 'all',
+                    outOfBrush: {
+                        colorAlpha: 0.1
+                    }
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: intervals,
+                        scale: true,
+                        boundaryGap: false,
+                        axisLine: {onZero: false},
+                        splitLine: {show: false},
+                        splitNumber: 20,
+                        min: 'dataMin',
+                        max: 'dataMax',
+                        axisPointer: {
+                            z: 100
+                        }
+                    },
+                    {
+                        type: 'category',
+                        gridIndex: 1,
+                        data: intervals,
+                        scale: true,
+                        boundaryGap: false,
+                        axisLine: {onZero: false},
+                        axisTick: {show: false},
+                        splitLine: {show: false},
+                        axisLabel: {show: false},
+                        splitNumber: 20,
+                        min: 'dataMin',
+                        max: 'dataMax'
+                    }
+                    
+                ],
+                yAxis: [
+                    {
+                        scale: true,
+                    },
+                    {
+                        scale: true,
+                        gridIndex: 1,
+                        splitNumber: 2,
+                        axisLabel: {show: false},
+                        axisLine: {show: false},
+                        axisTick: {show: false},
+                        splitLine: {show: false},
+                    }
+                ],
+                series: [
+                    {
+                        type: 'candlestick',
+                        data: seriesData,
+                        itemStyle: {
+                            color: upColor,
+                            color0: downColor,
+                            borderColor: null,
+                            borderColor0: null
+                        },
+                        tooltip: {
+                            formatter: function (param: any) {
+                                param = param[0];
+                                return [
+                                    'Date: ' + param.name + '<hr size=1 style="margin: 3px 0">',
+                                    'Open: ' + param.data[0] + '<br/>',
+                                    'Close: ' + param.data[1] + '<br/>',
+                                    'Lowest: ' + param.data[2] + '<br/>',
+                                    'Highest: ' + param.data[3] + '<br/>'
+                                ].join('');
+                            }
+                        }
+                    },
+                    {
+                        name: 'Volume',
+                        type: 'bar',
+                        xAxisIndex: 1,
+                        yAxisIndex: 1,
+                        data: volumes,
+                        itemStyle: {
+                            color: upColor,
+                            color0: downColor,
+                            borderColor: null,
+                            borderColor0: null
+                        },
+                    }
+                ],
+                darkMode: true
+            }
+
+            if(false) {
+                // @ts-ignore
+                chart.current.setOption({
+                    series: [{
+                        data: seriesData
+                    }]
+                })
+            } else {
+                setChartData(options)
+            }
+        }
+    }, [props.prices])
+
     if (props.candlesLoading !== 'success' || props.userLoading !== 'success') {
         return (
             <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <CircularProgress size = {80} />
+                <CircularProgress size={80} />
             </div>
         )
     }
@@ -113,7 +250,7 @@ const Dashboard = (props: Props) => {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-              },
+            },
             body: JSON.stringify({ dollars: maxBuy ? props.dollarBalance : buyField, uuid: props.userUUID, priceAtExecution: props.lastPrice })
         })
             .then(res => res.json())
@@ -143,7 +280,7 @@ const Dashboard = (props: Props) => {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
-              },
+            },
             body: JSON.stringify({ amount: maxSell ? props.coinBalance[props.selectedCrypto] : sellField, uuid: props.userUUID, priceAtExecution: props.lastPrice })
         })
             .then(res => res.json())
@@ -166,27 +303,29 @@ const Dashboard = (props: Props) => {
             })
     }
 
+
+
     return (
-        <div style={{ height: '100%' }}>
-            <div style= {{ display: 'flex', height: '100%' }}>
-                <div style = {{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10, height: '100%' }}>
-                    <div style = {{ borderBottom: '1px solid #262d34', marginBottom: 15 }}>
+        <div style={{ flexGrow: 1 }}>
+            <div style={{ display: 'flex', height: '100%' }}>
+                <div style={{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10 }}>
+                    <div style={{ borderBottom: '1px solid #262d34', marginBottom: 15 }}>
                         <h2>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(props.lastPrice, 2)}</h2>
                         <p>Balance:</p>
                         <p>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</p>
                         <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto]), 6)}</p>
                     </div>
                     <ToggleButtonGroup
-                        style = {{ width: '100%', maxHeight: 50 }}
+                        style={{ width: '100%', maxHeight: 50 }}
                         value={toggleInput}
                         exclusive
                         onChange={(event: any, newAlignment: any) => setToggleInput(newAlignment)}
                         aria-label="text alignment"
                     >
-                        <ToggleButton 
-                            value="buy" 
-                            aria-label="left aligned" 
-                            style = {{ 
+                        <ToggleButton
+                            value="buy"
+                            aria-label="left aligned"
+                            style={{
                                 backgroundColor: toggleInput === 'buy' ? '#2eae34' : '#263543',
                                 color: toggleInput === 'buy' ? 'white' : '#8a939f',
                                 flexGrow: 1
@@ -194,10 +333,10 @@ const Dashboard = (props: Props) => {
                         >
                             <p>Buy</p>
                         </ToggleButton>
-                        <ToggleButton 
-                            value="sell" 
-                            aria-label="left aligned" 
-                            style = {{ 
+                        <ToggleButton
+                            value="sell"
+                            aria-label="left aligned"
+                            style={{
                                 backgroundColor: toggleInput === 'sell' ? '#f9672d' : '#263543',
                                 color: toggleInput === 'sell' ? 'white' : '#8a939f',
                                 flexGrow: 1
@@ -211,22 +350,22 @@ const Dashboard = (props: Props) => {
                             <div style={{ display: 'flex', flexDirection: 'column', borderBottom: '1px solid #262d34' }}>
                                 <p style={{ color: '#8a939f' }}>Amount</p>
                                 <div style={{ display: 'flex', maxHeight: 50 }}>
-                                    <Paper component="form" style = {{ backgroundColor: "#263543", maxHeight: 50, height: 50 }}>
-                                        <Button 
-                                            style = {{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
-                                            variant="text" 
+                                    <Paper component="form" style={{ backgroundColor: "#263543", maxHeight: 50, height: 50 }}>
+                                        <Button
+                                            style={{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
+                                            variant="text"
                                             onClick={() => {
                                                 setBuyField(props.dollarBalance + "")
                                                 setMaxBuy(true)
-                                            }} 
+                                            }}
                                         >
                                             Max
                                         </Button>
                                         <InputBase
                                             placeholder="0.00"
                                             inputProps={{ 'aria-label': 'search google maps' }}
-                                            value={buyField} 
-                                            style = {{
+                                            value={buyField}
+                                            style={{
                                                 backgroundColor: '#263543',
                                                 color: 'white',
                                                 marginLeft: 10,
@@ -234,13 +373,13 @@ const Dashboard = (props: Props) => {
                                             onChange={event => {
                                                 setBuyField(event.target.value)
                                                 setMaxBuy(false)
-                                            }} 
+                                            }}
                                         />
-                                        <Button 
-                                            variant="contained" 
-                                            onClick={handleBuy} 
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleBuy}
                                             disabled={buyLoading || sellLoading}
-                                            style = {{
+                                            style={{
                                                 backgroundColor: '#2eae34',
                                                 color: 'white',
                                                 height: 50
@@ -248,7 +387,7 @@ const Dashboard = (props: Props) => {
                                         >
                                             {
                                                 buyLoading ? (
-                                                    <CircularProgress size = {15} />
+                                                    <CircularProgress size={15} />
                                                 ) : 'BUY'
                                             }
                                         </Button>
@@ -260,7 +399,7 @@ const Dashboard = (props: Props) => {
                                             <div style={{ marginLeft: 7 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                                     <h2 style={{ marginBottom: 3, marginTop: 0 }}>{nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
-                                                    <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3}}>+{numberWithCommasAndRounded(Number(Number(buyField) / props.lastPrice), 6)}</p>
+                                                    <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3 }}>+{numberWithCommasAndRounded(Number(Number(buyField) / props.lastPrice), 6)}</p>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', marginTop: 5 }}>
                                                     <h2 style={{ marginBottom: 3, marginTop: 0 }}>Remaining </h2>
@@ -272,77 +411,77 @@ const Dashboard = (props: Props) => {
                                 }
                             </div>
                         ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                <p style={{ color: '#8a939f' }}>Amount</p>
-                                <div style={{ display: 'flex', maxHeight: 50 }}>
-                                    <Paper component="form" style = {{ backgroundColor: "#263543", maxHeight: 50, height: 50 }}>
-                                        <Button 
-                                            style = {{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
-                                            variant="text" 
-                                            onClick={() => {
-                                                setSellField(toFixed(Number(props.coinBalance[props.selectedCrypto]), 6) + "")
-                                                setMaxSell(true)
-                                            }} 
-                                        >
-                                            Max
+                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                    <p style={{ color: '#8a939f' }}>Amount</p>
+                                    <div style={{ display: 'flex', maxHeight: 50 }}>
+                                        <Paper component="form" style={{ backgroundColor: "#263543", maxHeight: 50, height: 50 }}>
+                                            <Button
+                                                style={{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
+                                                variant="text"
+                                                onClick={() => {
+                                                    setSellField(toFixed(Number(props.coinBalance[props.selectedCrypto]), 6) + "")
+                                                    setMaxSell(true)
+                                                }}
+                                            >
+                                                Max
                                         </Button>
-                                        <InputBase
-                                            placeholder="0.00"
-                                            inputProps={{ 'aria-label': 'search google maps' }}
-                                            value={sellField} 
-                                            style = {{
-                                                backgroundColor: '#263543',
-                                                color: 'white',
-                                                marginLeft: 10,
-                                            }}
-                                            onChange={event => {
-                                                setSellField(event.target.value)
-                                                setMaxSell(false)
-                                            }} 
-                                        />
-                                        <Button 
-                                            variant="contained" 
-                                            onClick={handleSell} 
-                                            disabled={buyLoading || sellLoading}
-                                            style = {{
-                                                backgroundColor: '#f9672d',
-                                                color: 'white',
-                                                height: 50
-                                            }}
-                                        >
-                                            {
-                                                buyLoading ? (
-                                                    <CircularProgress size = {15} />
-                                                ) : 'SELL'
-                                            }
-                                        </Button>
-                                    </Paper>
-                                </div>
-                                {
-                                    sellField && (
-                                        <div>
-                                            <h2>Details</h2>
-                                            <div style={{ marginLeft: 7 }}>
-                                                <div>
-                                                    <h2 style={{ marginBottom: 3 }}>USD</h2>
-                                                    <p style={{ marginTop: 0, marginLeft: 10}}>+ ${numberWithCommasAndRounded(Number(Number(sellField) * props.lastPrice), 2)}</p>
-                                                    <p style={{ marginTop: 0, marginLeft: 10}}>New Balance: ${numberWithCommasAndRounded(Number(Number(sellField) * props.lastPrice + props.dollarBalance), 2)}</p>
-                                                </div>
-                                                <div>
-                                                    <h2 style={{ marginBottom: 3 }}>Remaining {nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
-                                                    <p style={{ marginTop: 0, marginLeft: 10 }}>{numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] - Number(sellField)), 6)}</p>
+                                            <InputBase
+                                                placeholder="0.00"
+                                                inputProps={{ 'aria-label': 'search google maps' }}
+                                                value={sellField}
+                                                style={{
+                                                    backgroundColor: '#263543',
+                                                    color: 'white',
+                                                    marginLeft: 10,
+                                                }}
+                                                onChange={event => {
+                                                    setSellField(event.target.value)
+                                                    setMaxSell(false)
+                                                }}
+                                            />
+                                            <Button
+                                                variant="contained"
+                                                onClick={handleSell}
+                                                disabled={buyLoading || sellLoading}
+                                                style={{
+                                                    backgroundColor: '#f9672d',
+                                                    color: 'white',
+                                                    height: 50
+                                                }}
+                                            >
+                                                {
+                                                    buyLoading ? (
+                                                        <CircularProgress size={15} />
+                                                    ) : 'SELL'
+                                                }
+                                            </Button>
+                                        </Paper>
+                                    </div>
+                                    {
+                                        sellField && (
+                                            <div>
+                                                <h2>Details</h2>
+                                                <div style={{ marginLeft: 7 }}>
+                                                    <div>
+                                                        <h2 style={{ marginBottom: 3 }}>USD</h2>
+                                                        <p style={{ marginTop: 0, marginLeft: 10 }}>+ ${numberWithCommasAndRounded(Number(Number(sellField) * props.lastPrice), 2)}</p>
+                                                        <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: ${numberWithCommasAndRounded(Number(Number(sellField) * props.lastPrice + props.dollarBalance), 2)}</p>
+                                                    </div>
+                                                    <div>
+                                                        <h2 style={{ marginBottom: 3 }}>Remaining {nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
+                                                        <p style={{ marginTop: 0, marginLeft: 10 }}>{numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] - Number(sellField)), 6)}</p>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )
-                                }
-                            </div>
-                        )
+                                        )
+                                    }
+                                </div>
+                            )
                     }
                 </div>
-                <div style = {{ flexGrow: 1 }}>
-                    <div style= {{ display: 'flex', flexDirection: 'column' }}>
-                        <div style= {{ display: 'flex' }}>
+                <div style={{ flexGrow: 1 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                        <div style={{ display: 'flex' }}>
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
@@ -354,11 +493,21 @@ const Dashboard = (props: Props) => {
                                 <MenuItem value="3600">1H</MenuItem>
                             </Select>
                         </div>
-                        <ApexChart
+                        {/*<ApexChart
                             options={chartOptions} 
                             series={[{data: props.prices[props.selectedCrypto][props.selectedInterval]}]} 
                             type="candlestick" height={500} 
-                        />
+                        />*/}
+                        {
+                            chartData && (
+                                <ReactEcharts
+                                    option={chartData}
+                                    notMerge={true}
+                                    lazyUpdate={true}
+                                    ref={chart}
+                                />
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -386,7 +535,7 @@ const connector = connect(mapStateToProps)
 type PropFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropFromRedux & {
-    
+
 }
 
 export default connector(Dashboard)

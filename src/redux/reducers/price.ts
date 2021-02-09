@@ -30,7 +30,12 @@ const initialState = {
             '300': [],
             '900': [],
             '3600': [],
-        }
+        },
+        dogeusdt: {
+            '300': [],
+            '900': [],
+            '3600': [],
+        },
     },
     lastPrice: 38000,
     selectedInterval: '300',

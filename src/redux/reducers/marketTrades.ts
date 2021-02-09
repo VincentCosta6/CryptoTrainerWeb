@@ -18,6 +18,7 @@ const initialState = {
     trades: {
         btcusd: [],
         ethusd: [],
+        dogeusdt: [],
     },
 } as MarketTradeState
 

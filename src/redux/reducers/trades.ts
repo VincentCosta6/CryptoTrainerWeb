@@ -19,6 +19,7 @@ const initialState = {
     trades: {
         'btcusd': [],
         'ethusd': [],
+        'dogeusdt': [],
     },
     loading: 'idle',
 } as TradeState

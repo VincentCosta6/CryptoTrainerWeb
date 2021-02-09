@@ -87,7 +87,15 @@ const Dashboard = (props: Props) => {
             const sliceNumber = props.prices[props.selectedCrypto][props.selectedInterval].length - 100
 
             const seriesData = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => [candle.y[0], candle.y[3], candle.y[2], candle.y[1]]).slice(sliceNumber)
-            const volumes = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => candle.z[0]).slice(sliceNumber)
+            const volumes = props.prices[props.selectedCrypto][props.selectedInterval].map((candle, index) => {
+                const sameCandle = props.prices[props.selectedCrypto][props.selectedInterval][index]
+
+                const candleOpen = sameCandle.y[0]
+                const candleClosed = sameCandle.y[3]
+
+                return [index, candle.z[0], candleOpen < candleClosed ? 1 : -1]
+            }).slice(sliceNumber)
+
             const upColor = '#47b262'
             const downColor = '#eb5454'
 
@@ -101,10 +109,15 @@ const Dashboard = (props: Props) => {
                     {
                         left: '5%',
                         right: '1%',
-                        top: '60%',
-                        height: '35%'
+                        top: '65%',
+                        height: '25%'
                     }
                 ],
+                legend: {
+                    bottom: 10,
+                    left: 'center',
+                    data: ['Dow-Jones index']
+                },
                 axisPointer: {
                     link: {xAxisIndex: 'all'},
                     label: {
@@ -136,6 +149,17 @@ const Dashboard = (props: Props) => {
                     outOfBrush: {
                         colorAlpha: 0.1
                     }
+                },
+                visualMap: {
+                    show: false,
+                    seriesIndex: 1,
+                    pieces: [{
+                        value: 1,
+                        color: upColor
+                    }, {
+                        value: -1,
+                        color: downColor
+                    }]
                 },
                 xAxis: [
                     {
@@ -176,14 +200,15 @@ const Dashboard = (props: Props) => {
                         scale: true,
                         gridIndex: 1,
                         splitNumber: 2,
-                        axisLabel: {show: false},
-                        axisLine: {show: false},
+                        axisLabel: {show: true},
+                        axisLine: {show: true},
                         axisTick: {show: false},
                         splitLine: {show: false},
                     }
                 ],
                 series: [
                     {
+                        name: 'Dow-Jones index',
                         type: 'candlestick',
                         data: seriesData,
                         itemStyle: {
@@ -211,12 +236,6 @@ const Dashboard = (props: Props) => {
                         xAxisIndex: 1,
                         yAxisIndex: 1,
                         data: volumes,
-                        itemStyle: {
-                            color: upColor,
-                            color0: downColor,
-                            borderColor: null,
-                            borderColor0: null
-                        },
                     }
                 ],
                 darkMode: true

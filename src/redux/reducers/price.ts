@@ -48,7 +48,7 @@ interface FetchCoinPriceParameters {
 export const fetchCoinPrice = createAsyncThunk(
     'price/fetchCoinPrice',
     async (params: FetchCoinPriceParameters) => {
-        const response = await (await fetch(`http://localhost:8080/price/${params.ticker}?interval=${params.interval}`)).json();
+        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/price/${params.ticker}?interval=${params.interval}`)).json();
 
         return {
             result: response.result,

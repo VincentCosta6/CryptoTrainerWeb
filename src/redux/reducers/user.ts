@@ -17,7 +17,7 @@ const initialState = {
 export const fetchUserByUUID = createAsyncThunk(
     'users/fetchUsersByUUID',
     async (uuid: string) => {
-        const response = await (await fetch(`http://localhost:8080/user/${uuid}`)).json();
+        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/user/${uuid}`)).json();
         return response.user
     }
 )

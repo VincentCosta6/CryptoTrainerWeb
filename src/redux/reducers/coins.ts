@@ -32,7 +32,7 @@ const initialState = {
 export const fetchCoinList = createAsyncThunk(
     'coins/fetchCoinList',
     async () => {
-        const response = await (await fetch(`http://localhost:8080/coins?length=2`)).json();
+        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/coins?length=2`)).json();
         console.log(response.data)
         return response.data
     }

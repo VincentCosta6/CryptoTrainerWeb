@@ -94,7 +94,7 @@ const Dashboard = (props: Props) => {
 
     const handleBuy = () => {
         setBuyLoading(true)
-        fetch(`http://localhost:8080/coins/buy/${props.selectedCrypto}`, {
+        fetch(`https://minecraft-markets.herokuapp.com/coins/buy/${props.selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -122,7 +122,7 @@ const Dashboard = (props: Props) => {
 
     const handleSell = () => {
         setSellLoading(true)
-        fetch(`http://localhost:8080/coins/sell/${props.selectedCrypto}`, {
+        fetch(`https://minecraft-markets.herokuapp.com/coins/sell/${props.selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

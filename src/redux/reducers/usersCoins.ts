@@ -15,7 +15,7 @@ const initialState = {
 export const fetchUsersCoinsByUUID = createAsyncThunk(
     'users/fetchUsersCoinsByUUID',
     async (uuid: string) => {
-        const response = await (await fetch(`http://localhost:8080/users/${uuid}/coins/`)).json();
+        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/users/${uuid}/coins/`)).json();
 
         const tickers = response.coins.reduce((acc: any, coin: any) => {
             acc[coin.coinTicker] = coin.quantity

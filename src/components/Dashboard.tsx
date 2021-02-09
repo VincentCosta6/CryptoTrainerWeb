@@ -25,6 +25,10 @@ const Dashboard = (props: Props) => {
         )
     }
 
+    console.log(props.selectedCrypto)
+    console.log(props.marketTrades)
+    console.log(props.marketTrades[props.selectedCrypto])
+
     return (
         <div style={{ height: '90vh' }}>
             <div style={{ display: 'flex', height: '100%' }}>

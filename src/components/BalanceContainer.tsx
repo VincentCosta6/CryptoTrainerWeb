@@ -26,7 +26,7 @@ const nameMap: any = {
 }
 
 export const BalanceContainer = (props: Props) => {
-    if (props.usersCoinsLoading !== 'success' || props.selectedCrypto === '') {
+    if (props.usersCoinsLoading !== 'success' || props.coinsLoading !== 'success' || props.selectedCrypto === '') {
         return (
             <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <CircularProgress size={80} />
@@ -47,6 +47,7 @@ export const BalanceContainer = (props: Props) => {
 const mapStateToProps = (state: RootState) => ({
     coinBalance: state.usersCoins.tickers,
     coinMap: state.coins.map,
+    coinsLoading: state.coins.loading,
     dollarBalance: state.user.dollars,
     lastPrice: state.price.lastPrice,
     usersCoinsBalance: state.usersCoins.tickers,

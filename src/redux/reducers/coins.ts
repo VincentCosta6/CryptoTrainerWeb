@@ -24,7 +24,7 @@ interface CoinState {
 
 const initialState = {
     coins: [],
-    selectedCoin: '',
+    selectedCoin: 'btcusd',
     map: {},
     loading: 'idle',
 } as CoinState

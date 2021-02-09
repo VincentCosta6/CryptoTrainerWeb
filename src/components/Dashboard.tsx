@@ -369,10 +369,11 @@ const Dashboard = (props: Props) => {
                             <div style={{ display: 'flex', flexDirection: 'column', borderBottom: '1px solid #262d34' }}>
                                 <p style={{ color: '#8a939f' }}>Amount</p>
                                 <div style={{ display: 'flex', maxHeight: 50 }}>
-                                    <Paper component="form" style={{ backgroundColor: "#263543", maxHeight: 50, height: 50 }}>
+                                    <Paper component="form" style={{ backgroundColor: "#263543", maxHeight: 50, height: 50, display: 'flex' }}>
                                         <Button
                                             style={{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
                                             variant="text"
+                                            size="small"
                                             onClick={() => {
                                                 setBuyField(props.dollarBalance + "")
                                                 setMaxBuy(true)

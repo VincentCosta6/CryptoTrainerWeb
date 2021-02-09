@@ -68,6 +68,7 @@ interface SetCandlePayload {
     ticker: string
     intervalName: string
     y: Array<number>
+    z: Array<number>
 }
 
 interface AddCandlePayload {
@@ -85,6 +86,7 @@ export const priceReducers = {
         const currentCandleArr = state.prices[action.payload.ticker][action.payload.intervalName]
 
         state.prices[action.payload.ticker][action.payload.intervalName][currentCandleArr.length - 1].y = action.payload.y
+        state.prices[action.payload.ticker][action.payload.intervalName][currentCandleArr.length - 1].z = action.payload.z
     },
     setLastPrice: (state: PriceState, action: PayloadAction<number>) => {
         state.lastPrice = action.payload

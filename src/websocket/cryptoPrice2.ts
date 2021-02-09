@@ -50,13 +50,14 @@ const init = () => {
       dispatch(setCandle({
         ticker: ticker,
         intervalName: intervalSelected,
-        y: data.candle.y
+        y: data.candle.y,
+        z: data.candle.z,
       }))
     } else {
       dispatch(addCandle({
         ticker: ticker,
         intervalName: intervalSelected,
-        interval: data.candle
+        interval: data.candle,
       }))
     }
   }

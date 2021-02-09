@@ -1,16 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
-interface UpdateCoinPrice {
-    ticker: string,
-    price: number,
-}
-
 interface Coin {
     name: string,
     ticker: string,
     cryptowatchID: string
-    price: number,
-    quantity: number,
+    exchange: string
 }
 
 interface CoinState {
@@ -39,11 +33,7 @@ export const fetchCoinList = createAsyncThunk(
 
 export const coinReducer = {
     setSelectedCoin: (state: CoinState, action: PayloadAction<string>) => ({ ...state, selectedCoin: action.payload }),
-    setCoins: (state: CoinState, action: PayloadAction<Array<string>>) => ({ ...state, coins: action.payload }),
-    updateCoinPrice: (state: CoinState, action: PayloadAction<UpdateCoinPrice>) => {
-        state.map[action.payload.ticker].price = action.payload.price
-        return state
-    }
+    setCoins: (state: CoinState, action: PayloadAction<Array<string>>) => ({ ...state, coins: action.payload })
 }
 
 const coinSlice = createSlice({
@@ -57,6 +47,6 @@ const coinSlice = createSlice({
     }
 })
 
-export const { setSelectedCoin, setCoins, updateCoinPrice } = coinSlice.actions 
+export const { setSelectedCoin, setCoins } = coinSlice.actions 
 
 export default coinSlice.reducer

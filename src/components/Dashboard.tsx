@@ -11,23 +11,16 @@ import { CircularProgress } from '@material-ui/core'
 import { MarketTradeType } from '../redux/reducers/marketTrades';
 import MarketTrade from './MarketTrade';
 
-
-
-
 const Dashboard = (props: Props) => {
     const dispatch = useAppDispatch()
 
-    if (props.userLoading !== 'success') {
+    if (props.userLoading !== 'success' || props.coinLoading !== 'success') {
         return (
             <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <CircularProgress size={80} />
             </div>
         )
     }
-
-    console.log(props.selectedCrypto)
-    console.log(props.marketTrades)
-    console.log(props.marketTrades[props.selectedCrypto])
 
     return (
         <div style={{ height: '90vh' }}>

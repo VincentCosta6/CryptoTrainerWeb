@@ -17,6 +17,7 @@ export const ChartContainer = (props: Props) => {
     useEffect(() => {
         dispatch(fetchCoinPrice({
             ticker: props.selectedCrypto,
+            exchange: props.coinMap[props.selectedCrypto].exchange,
             interval: props.selectedInterval
         }))
     }, [props.selectedInterval, props.selectedCrypto])
@@ -72,6 +73,7 @@ export const ChartContainer = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
     candlesLoading: state.price.loading,
+    coinMap: state.coins.map,
     prices: state.price.prices,
     selectedCrypto: state.coins.selectedCoin,
     selectedInterval: state.price.selectedInterval,

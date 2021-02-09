@@ -14,6 +14,8 @@ import { Button, CircularProgress, InputBase, MenuItem, Select, TextField } from
 import Paper from '@material-ui/core/Paper';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import { MarketTradeType } from '../redux/reducers/marketTrades';
+import MarketTrade from './MarketTrade';
 
 function toFixed(num: any, fixed: number) {
     var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
@@ -46,7 +48,6 @@ const Dashboard = (props: Props) => {
     const [toggleInput, setToggleInput] = useState('buy')
     const [chartData, setChartData] = useState<any>()
 
-    const [series, setSeries] = useState<Array<any>>([])
     const [maxBuy, setMaxBuy] = useState(false)
     const [buyField, setBuyField] = useState('')
     const [buyLoading, setBuyLoading] = useState(false)
@@ -295,7 +296,7 @@ const Dashboard = (props: Props) => {
 
 
     return (
-        <div style={{ flexGrow: 1 }}>
+        <div style={{ height: '90vh' }}>
             <div style={{ display: 'flex', height: '100%' }}>
                 <div style={{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10, minWidth: 300 }}>
                     <div style={{ borderBottom: '1px solid #262d34', marginBottom: 15 }}>
@@ -500,6 +501,11 @@ const Dashboard = (props: Props) => {
                         }
                     </div>
                 </div>
+                <div style = {{ overflowY: 'hidden', color: '#8a939f', borderLeft: '1px solid #262d34', padding: 10, minWidth: 100, minHeight: '100%' }}>
+                    {
+                        [...props.marketTrades].reverse().map((trade: MarketTradeType) => <MarketTrade key={trade.externalId} trade={trade} />)
+                    }
+                </div>
             </div>
         </div>
     )
@@ -518,7 +524,8 @@ const mapStateToProps = (state: RootState) => ({
     pricesLoading: state.price.loading,
     userLoading: state.price.loading,
     userUUID: state.user.uuid,
-    coinBalance: state.usersCoins.tickers
+    coinBalance: state.usersCoins.tickers,
+    marketTrades: state.marketTrades.trades
 })
 
 const connector = connect(mapStateToProps)

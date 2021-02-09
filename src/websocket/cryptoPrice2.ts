@@ -1,6 +1,8 @@
 import store from '../redux/store'
 
 import { addCandle, setCandle, setLastPrice, setWebsocketStatus, ApexCandle, setWebsocket } from '../redux/reducers/price'
+import { addTrades } from '../redux/reducers/marketTrades'
+import { addTrade } from '../redux/reducers/trades'
 
 const dispatch = store.dispatch
 
@@ -45,35 +47,44 @@ const init = (reconnectAttempt: boolean) => {
       return
     }
 
-    const ticker = store.getState().coins.selectedCoin
-    const intervalSelected = store.getState().price.selectedInterval
-
-    const candleArr = store.getState().price.prices[ticker][intervalSelected]
-    const currentInterval = candleArr[candleArr.length - 1]
-
-    if (!currentInterval) {
-      return
+    if (data.type === 'tradesUpdate') {
+      console.log(data)
+      dispatch(addTrades(data.trades))
     }
 
-    const currentUnixTimestamp = Math.floor(currentInterval.x)
+    if (data.type === 'marketUpdate') {
+      const ticker = store.getState().coins.selectedCoin
+      const intervalSelected = store.getState().price.selectedInterval
 
-    dispatch(setLastPrice(data.candle.y[3]))
-    document.title = numberWithCommasAndRounded(data.candle.y[3], 2)
+      const candleArr = store.getState().price.prices[ticker][intervalSelected]
+      const currentInterval = candleArr[candleArr.length - 1]
 
-    if (currentUnixTimestamp === Math.floor(data.candle.x)) {
-      dispatch(setCandle({
-        ticker: ticker,
-        intervalName: intervalSelected,
-        y: data.candle.y,
-        z: data.candle.z,
-      }))
-    } else {
-      dispatch(addCandle({
-        ticker: ticker,
-        intervalName: intervalSelected,
-        interval: data.candle,
-      }))
+      if (!currentInterval) {
+        return
+      }
+
+      const currentUnixTimestamp = Math.floor(currentInterval.x)
+
+      dispatch(setLastPrice(data.candle.y[3]))
+      document.title = numberWithCommasAndRounded(data.candle.y[3], 2)
+
+      if (currentUnixTimestamp === Math.floor(data.candle.x)) {
+        dispatch(setCandle({
+          ticker: ticker,
+          intervalName: intervalSelected,
+          y: data.candle.y,
+          z: data.candle.z,
+        }))
+      } else {
+        dispatch(addCandle({
+          ticker: ticker,
+          intervalName: intervalSelected,
+          interval: data.candle,
+        }))
+      }
     }
+
+
   }
 
   cryptoWatchSocketClient.onerror = (err: ErrorEvent) => {

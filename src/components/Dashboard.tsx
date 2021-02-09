@@ -17,14 +17,23 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 import ws from '../websocket/cryptoPrice2'
 
-function numberWithCommas(x: any) {
-    return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+function toFixed(num: any, fixed: number) {
+    var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
+    return num.toString().match(re)[0];
+}
+
+function numberWithCommasAndRounded(x: any, length: number) {
+    const fixed = toFixed(x, length)
+    return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
 const chartOptions = {
     chart: {
       type: 'candlestick',
-      height: 350
+      height: 350,
+      animations: {
+        enabled: false
+      },
     },
     title: {
       text: 'CandleStick Chart',
@@ -37,6 +46,9 @@ const chartOptions = {
       tooltip: {
         enabled: true
       }
+    },
+    markers: {
+        size: 0
     }
 }
 
@@ -56,8 +68,10 @@ const Dashboard = (props: Props) => {
     const [toggleInput, setToggleInput] = useState('buy')
 
     const [series, setSeries] = useState<Array<any>>([])
+    const [maxBuy, setMaxBuy] = useState(false)
     const [buyField, setBuyField] = useState('')
     const [buyLoading, setBuyLoading] = useState(false)
+    const [maxSell, setMaxSell] = useState(false)
     const [sellField, setSellField] = useState('')
     const [sellLoading, setSellLoading] = useState(false)
     const [websocket, setWebsocket] = useState<WebSocket | null>(null)
@@ -100,7 +114,7 @@ const Dashboard = (props: Props) => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
               },
-            body: JSON.stringify({ dollars: buyField, uuid: props.userUUID, priceAtExecution: props.lastPrice })
+            body: JSON.stringify({ dollars: maxBuy ? props.dollarBalance : buyField, uuid: props.userUUID, priceAtExecution: props.lastPrice })
         })
             .then(res => res.json())
             .then(data => {
@@ -113,10 +127,12 @@ const Dashboard = (props: Props) => {
                 dispatch(setDollars(updateInfo.newDollars))
                 setBuyLoading(false)
                 setBuyField('0')
+                setMaxBuy(false)
             })
             .catch(err => {
                 console.log(err)
                 setBuyLoading(false)
+                setMaxBuy(false)
             })
     }
 
@@ -128,7 +144,7 @@ const Dashboard = (props: Props) => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
               },
-            body: JSON.stringify({ amount: sellField, uuid: props.userUUID, priceAtExecution: props.lastPrice })
+            body: JSON.stringify({ amount: maxSell ? props.coinBalance[props.selectedCrypto] : sellField, uuid: props.userUUID, priceAtExecution: props.lastPrice })
         })
             .then(res => res.json())
             .then(data => {
@@ -141,10 +157,12 @@ const Dashboard = (props: Props) => {
                 dispatch(setDollars(updateInfo.newDollars))
                 setSellLoading(false)
                 setSellField('0')
+                setMaxSell(false)
             })
             .catch(err => {
                 console.log(err)
                 setSellLoading(false)
+                setMaxSell(false)
             })
     }
 
@@ -153,10 +171,10 @@ const Dashboard = (props: Props) => {
             <div style= {{ display: 'flex', height: '100%' }}>
                 <div style = {{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10, height: '100%' }}>
                     <div style = {{ borderBottom: '1px solid #262d34', marginBottom: 15 }}>
-                        <h2>{tickerMap[props.selectedCrypto]}: ${numberWithCommas(props.lastPrice)}</h2>
+                        <h2>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(props.lastPrice, 2)}</h2>
                         <p>Balance:</p>
-                        <p>${numberWithCommas(Number(props.dollarBalance).toFixed(2))}</p>
-                        <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommas(Number(props.coinBalance[props.selectedCrypto]).toFixed(6))}</p>
+                        <p>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</p>
+                        <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto]), 6)}</p>
                     </div>
                     <ToggleButtonGroup
                         style = {{ width: '100%', maxHeight: 50 }}
@@ -197,7 +215,10 @@ const Dashboard = (props: Props) => {
                                         <Button 
                                             style = {{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
                                             variant="text" 
-                                            onClick={() => setBuyField(props.dollarBalance + "")} 
+                                            onClick={() => {
+                                                setBuyField(props.dollarBalance + "")
+                                                setMaxBuy(true)
+                                            }} 
                                         >
                                             Max
                                         </Button>
@@ -210,7 +231,10 @@ const Dashboard = (props: Props) => {
                                                 color: 'white',
                                                 marginLeft: 10,
                                             }}
-                                            onChange={event => setBuyField(event.target.value)} 
+                                            onChange={event => {
+                                                setBuyField(event.target.value)
+                                                setMaxBuy(false)
+                                            }} 
                                         />
                                         <Button 
                                             variant="contained" 
@@ -236,11 +260,11 @@ const Dashboard = (props: Props) => {
                                             <div style={{ marginLeft: 7 }}>
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                                     <h2 style={{ marginBottom: 3, marginTop: 0 }}>{nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
-                                                    <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3}}>+{numberWithCommas(Number(Number(buyField) / props.lastPrice).toFixed(6))}</p>
+                                                    <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3}}>+{numberWithCommasAndRounded(Number(Number(buyField) / props.lastPrice), 6)}</p>
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', marginTop: 5 }}>
                                                     <h2 style={{ marginBottom: 3, marginTop: 0 }}>Remaining </h2>
-                                                    <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3 }}>${numberWithCommas(Number(Number(props.dollarBalance) - Number(buyField)).toFixed(2))}</p>
+                                                    <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3 }}>${numberWithCommasAndRounded(Number(Number(props.dollarBalance) - Number(buyField)), 2)}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -255,7 +279,10 @@ const Dashboard = (props: Props) => {
                                         <Button 
                                             style = {{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
                                             variant="text" 
-                                            onClick={() => setSellField(Number(props.coinBalance[props.selectedCrypto]).toFixed(6) + "")} 
+                                            onClick={() => {
+                                                setSellField(toFixed(Number(props.coinBalance[props.selectedCrypto]), 6) + "")
+                                                setMaxSell(true)
+                                            }} 
                                         >
                                             Max
                                         </Button>
@@ -268,7 +295,10 @@ const Dashboard = (props: Props) => {
                                                 color: 'white',
                                                 marginLeft: 10,
                                             }}
-                                            onChange={event => setSellField(event.target.value)} 
+                                            onChange={event => {
+                                                setSellField(event.target.value)
+                                                setMaxSell(false)
+                                            }} 
                                         />
                                         <Button 
                                             variant="contained" 
@@ -295,12 +325,12 @@ const Dashboard = (props: Props) => {
                                             <div style={{ marginLeft: 7 }}>
                                                 <div>
                                                     <h2 style={{ marginBottom: 3 }}>USD</h2>
-                                                    <p style={{ marginTop: 0, marginLeft: 10}}>+ ${numberWithCommas(Number(Number(sellField) * props.lastPrice).toFixed(2))}</p>
-                                                    <p style={{ marginTop: 0, marginLeft: 10}}>New Balance: ${numberWithCommas(Number(Number(sellField) * props.lastPrice + props.dollarBalance).toFixed(2))}</p>
+                                                    <p style={{ marginTop: 0, marginLeft: 10}}>+ ${numberWithCommasAndRounded(Number(Number(sellField) * props.lastPrice), 2)}</p>
+                                                    <p style={{ marginTop: 0, marginLeft: 10}}>New Balance: ${numberWithCommasAndRounded(Number(Number(sellField) * props.lastPrice + props.dollarBalance), 2)}</p>
                                                 </div>
                                                 <div>
                                                     <h2 style={{ marginBottom: 3 }}>Remaining {nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
-                                                    <p style={{ marginTop: 0, marginLeft: 10 }}>{numberWithCommas(Number(props.coinBalance[props.selectedCrypto] - Number(sellField)).toFixed(6))}</p>
+                                                    <p style={{ marginTop: 0, marginLeft: 10 }}>{numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] - Number(sellField)), 6)}</p>
                                                 </div>
                                             </div>
                                         </div>

@@ -9,7 +9,7 @@ let cryptoWatchSocketClient: any
 const init = () => {
   console.log('here')
 
-  cryptoWatchSocketClient = new WebSocket(`wss://minecraft-markets.herokuapp.com:8082`);
+  cryptoWatchSocketClient = new WebSocket(`wss://minecraft-markets.herokuapp.com/websocket`);
 
   cryptoWatchSocketClient.onopen = () => {
     const selectedCrypto = store.getState().coins.selectedCoin
@@ -56,6 +56,10 @@ const init = () => {
             interval: data.candle
         }))
       }
+  }
+
+  cryptoWatchSocketClient.onerror = (err: any) => {
+    console.log('Websocket new error', err)
   }
 
   return cryptoWatchSocketClient

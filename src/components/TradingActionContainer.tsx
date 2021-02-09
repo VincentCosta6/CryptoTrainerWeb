@@ -8,12 +8,21 @@ import { connect, ConnectedProps } from 'react-redux'
 
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
 import ToggleButton from '@material-ui/lab/ToggleButton'
+import { CircularProgress } from '@material-ui/core'
 
 export const TradingActionContainer = (props: Props) => {
     const [toggleInput, setToggleInput] = useState('buy')
 
     const [buyLoading, setBuyLoading] = useState(false)
     const [sellLoading, setSellLoading] = useState(false)
+
+    if (props.coinsLoading !== 'success') {
+        return (
+            <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <CircularProgress size={80} />
+            </div>
+        )
+    }
 
     return (
         <div>
@@ -57,7 +66,7 @@ export const TradingActionContainer = (props: Props) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-
+    coinsLoading: state.coins.loading
 })
 
 const connector = connect(mapStateToProps)

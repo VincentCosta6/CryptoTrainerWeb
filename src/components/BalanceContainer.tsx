@@ -15,7 +15,7 @@ function numberWithCommasAndRounded(x: any, length: number) {
     return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
-const tickerMap: any = {
+export const tickerMap: any = {
     'btcusd': 'BTC/USD',
     'ethusd': 'ETH/USD',
 }

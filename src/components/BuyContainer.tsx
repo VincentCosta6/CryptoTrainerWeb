@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import InputBase from '@material-ui/core/InputBase'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { tickerMap } from './BalanceContainer'
 
 function toFixed(num: any, fixed: number) {
     var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
@@ -62,6 +63,19 @@ export const BuyContainer = (props: Props) => {
             })
     }
 
+    const price = Number(props.lastPrice) * 1.0005
+    const fees = Number(buyField) * .01
+
+    const actualBuyingPower = Number(buyField) - fees
+
+    const newCoins = Number(actualBuyingPower) / Number(price)
+
+    const newCoinBalance = Number(props.coinBalance[props.selectedCrypto]) + newCoins
+    const remainingBalance = maxBuy ? 0 : props.dollarBalance - Number(buyField)
+
+    /*const newBalance = Number(props.dollarBalance) + newMoney
+    const remainingCoins =  maxSell ? 0 : Number(props.coinBalance[props.selectedCrypto]) - Number(sellField)*/
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', borderBottom: '1px solid #262d34' }}>
             <p style={{ color: '#8a939f' }}>Amount</p>
@@ -94,6 +108,7 @@ export const BuyContainer = (props: Props) => {
                     />
                     <Button
                         variant="contained"
+                        size="small"
                         onClick={handleBuy}
                         disabled={props.buyLoading || props.otherActionLoading}
                         style={{
@@ -110,22 +125,14 @@ export const BuyContainer = (props: Props) => {
                     </Button>
                 </Paper>
             </div>
-            {
-                buyField && (
-                    <div style={{ marginTop: 10 }}>
-                        <div style={{ marginLeft: 7 }}>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <p style={{ marginBottom: 3, marginTop: 0 }}>{nameMap[props.coinMap[props.selectedCrypto].name]}</p>
-                                <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3 }}>+{numberWithCommasAndRounded(Number(Number(buyField) / props.lastPrice), 6)}</p>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', marginTop: 5 }}>
-                                <p style={{ marginBottom: 3, marginTop: 0 }}>Remaining </p>
-                                <p style={{ marginTop: 0, marginBottom: 0, marginLeft: 3 }}>${numberWithCommasAndRounded(Number(Number(props.dollarBalance) - Number(buyField)), 2)}</p>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
+            <div style={{ marginTop: 10 }}>
+                <div style={{ marginLeft: 7 }}>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(price, 2)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: {numberWithCommasAndRounded(newCoinBalance, 6)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining ${numberWithCommasAndRounded(remainingBalance, 2)}</p>
+                </div>
+            </div>
         </div>
     )
 };

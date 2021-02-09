@@ -48,7 +48,6 @@ const init = (reconnectAttempt: boolean) => {
     }
 
     if (data.type === 'tradesUpdate') {
-      console.log(data)
       dispatch(addTrades(data.trades))
     }
 

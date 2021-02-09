@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import BalanceContainer from './BalanceContainer'
+import BalanceContainer, { tickerMap } from './BalanceContainer'
 
 import { RootState, useAppDispatch } from '../redux/store'
 import { connect, ConnectedProps } from 'react-redux'
@@ -66,15 +66,23 @@ export const TradingActionContainer = (props: Props) => {
             })
     }
 
+    const price = Number(props.lastPrice) * .99985
+    const fees = Number(sellField) * .01 * price
+
+    const newMoney = Number(sellField) * Number(price) - fees
+
+    const newBalance = Number(props.dollarBalance) + newMoney
+    const remainingCoins =  maxSell ? 0 : Number(props.coinBalance[props.selectedCrypto]) - Number(sellField)
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', borderBottom: '1px solid #262d34' }}>
             <p style={{ color: '#8a939f' }}>Amount</p>
             <div style={{ display: 'flex', maxHeight: 50 }}>
-                <Paper component="form" style={{ backgroundColor: "#263543", maxHeight: 50, height: 50 }}>
+                <Paper component="form" style={{ backgroundColor: "#263543", maxHeight: 50, height: 50, display: 'flex' }}>
                     <Button
                         style={{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
                         variant="text"
+                        size="small"
                         onClick={() => {
                             setSellField(toFixed(Number(props.coinBalance[props.selectedCrypto]), 6) + "")
                             setMaxSell(true)
@@ -98,6 +106,7 @@ export const TradingActionContainer = (props: Props) => {
                     />
                     <Button
                         variant="contained"
+                        size="small"
                         onClick={handleSell}
                         disabled={props.sellLoading || props.otherActionLoading}
                         style={{
@@ -114,24 +123,14 @@ export const TradingActionContainer = (props: Props) => {
                     </Button>
                 </Paper>
             </div>
-            {
-                sellField && (
-                    <div>
-                        <h2>Details</h2>
-                        <div style={{ marginLeft: 7 }}>
-                            <div>
-                                <h2 style={{ marginBottom: 3 }}>USD</h2>
-                                <p style={{ marginTop: 0, marginLeft: 10 }}>+ ${numberWithCommasAndRounded(Number(Number(sellField) * props.lastPrice), 2)}</p>
-                                <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: ${numberWithCommasAndRounded(Number(Number(sellField) * props.lastPrice + props.dollarBalance), 2)}</p>
-                            </div>
-                            <div>
-                                <h2 style={{ marginBottom: 3 }}>Remaining {nameMap[props.coinMap[props.selectedCrypto].name]}</h2>
-                                <p style={{ marginTop: 0, marginLeft: 10 }}>{numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] - Number(sellField)), 6)}</p>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
+            <div style={{ marginTop: 10 }}>
+                <div style={{ marginLeft: 7 }}>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(price, 2)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: ${numberWithCommasAndRounded(newBalance, 2)} (+${numberWithCommasAndRounded(newMoney, 2)})</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining {numberWithCommasAndRounded(remainingCoins, 6)}</p>
+                </div>
+            </div>
         </div>
     )
 };

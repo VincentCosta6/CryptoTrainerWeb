@@ -9,7 +9,7 @@ let cryptoWatchSocketClient: any
 const init = () => {
   console.log('here')
 
-  cryptoWatchSocketClient = new WebSocket(`ws://minecraft-markets.herokuapp.com:8082`);
+  cryptoWatchSocketClient = new WebSocket(`wss://minecraft-markets.herokuapp.com:8082`);
 
   cryptoWatchSocketClient.onopen = () => {
     const selectedCrypto = store.getState().coins.selectedCoin

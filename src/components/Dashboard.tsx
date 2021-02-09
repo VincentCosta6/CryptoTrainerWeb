@@ -215,6 +215,7 @@ const Dashboard = (props: Props) => {
                             borderColor0: null
                         },
                         tooltip: {
+                            alwaysShowCOntent: true,
                             formatter: function (param: any) {
                                 param = param[0];
                                 return [
@@ -509,7 +510,7 @@ const Dashboard = (props: Props) => {
                             chartData && (
                                 <ReactEcharts
                                     option={chartData}
-                                    notMerge={true}
+                                    notMerge={false}
                                     lazyUpdate={true}
                                     ref={chart}
                                 />

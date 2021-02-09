@@ -6,10 +6,22 @@ const dispatch = store.dispatch
 
 let cryptoWatchSocketClient: any
 
+function toFixed(num: any, fixed: number) {
+  var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
+  return num.toString().match(re)[0];
+}
+
+function numberWithCommasAndRounded(x: any, length: number) {
+  const fixed = toFixed(x, length)
+  return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+}
+
 const init = () => {
   console.log('here')
 
   cryptoWatchSocketClient = new WebSocket(`wss://minecraft-markets.herokuapp.com/websocket`);
+
+  dispatch(setWebsocketStatus('pending'))
 
   cryptoWatchSocketClient.onopen = () => {
     const selectedCrypto = store.getState().coins.selectedCoin
@@ -43,6 +55,7 @@ const init = () => {
     const currentUnixTimestamp = Math.floor(currentInterval.x)
 
     dispatch(setLastPrice(data.candle.y[3]))
+    document.title = numberWithCommasAndRounded(data.candle.y[3], 2)
 
     if (currentUnixTimestamp === Math.floor(data.candle.x)) {
       dispatch(setCandle({
@@ -60,8 +73,17 @@ const init = () => {
     }
   }
 
-  cryptoWatchSocketClient.onerror = (err: any) => {
+  cryptoWatchSocketClient.onerror = (err: ErrorEvent) => {
+    dispatch(setWebsocketStatus('error'))
     console.log('Websocket new error', err)
+  }
+
+  cryptoWatchSocketClient.onclose = (event: CloseEvent) => {
+    if (event.code === 1006) {
+      dispatch(setWebsocketStatus('idle'))
+    }
+
+    console.log('Websocket closed code: ', event.code)
   }
 
   return cryptoWatchSocketClient

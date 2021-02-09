@@ -16,9 +16,7 @@ function numberWithCommasAndRounded(x: any, length: number) {
   return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
 
-const init = () => {
-  console.log('here')
-
+const init = (reconnectAttempt: boolean) => {
   cryptoWatchSocketClient = new WebSocket(`wss://minecraft-markets.herokuapp.com/websocket`);
 
   dispatch(setWebsocketStatus('pending'))
@@ -28,11 +26,16 @@ const init = () => {
 
     dispatch(setWebsocketStatus('success'))
 
-    cryptoWatchSocketClient.send(JSON.stringify({
-      apiKey: store.getState().user.uuid,
-      interval: store.getState().price.selectedInterval,
-      currencyPairId: store.getState().coins.map[selectedCrypto].cryptowatchID
-    }))
+    if (reconnectAttempt) {
+      // @ts-ignore
+      document.location.reload()
+    } else {
+      cryptoWatchSocketClient.send(JSON.stringify({
+        apiKey: store.getState().user.uuid,
+        interval: store.getState().price.selectedInterval,
+        currencyPairId: store.getState().coins.map[selectedCrypto].cryptowatchID
+      }))
+    }
   }
 
   cryptoWatchSocketClient.onmessage = (msg: any) => {

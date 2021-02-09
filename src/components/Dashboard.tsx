@@ -15,8 +15,6 @@ import Paper from '@material-ui/core/Paper';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-import ws from '../websocket/cryptoPrice2'
-
 function toFixed(num: any, fixed: number) {
     var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
     return num.toString().match(re)[0];
@@ -55,22 +53,6 @@ const Dashboard = (props: Props) => {
     const [maxSell, setMaxSell] = useState(false)
     const [sellField, setSellField] = useState('')
     const [sellLoading, setSellLoading] = useState(false)
-    const [websocket, setWebsocket] = useState<WebSocket | null>(null)
-
-    useEffect(() => {
-        websocket?.send(JSON.stringify({ type: 'changeCrypto', currencyPairId: props.coinMap[props.selectedCrypto].cryptowatchID }))
-    }, [props.selectedCrypto])
-
-    useEffect(() => {
-        websocket?.send(JSON.stringify({ type: 'changeInterval', interval: props.selectedInterval }))
-    }, [props.selectedInterval])
-
-    useEffect(() => {
-        if (props.pricesLoading === 'success' && props.websocketConnected === 'idle') {
-            console.log('hereasdsdfsdf')
-            setWebsocket(ws())
-        }
-    }, [props.pricesLoading])
 
     useEffect(() => {
         dispatch(fetchCoinPrice({

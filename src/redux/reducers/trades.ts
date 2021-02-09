@@ -26,7 +26,6 @@ export const fetchTradeList = createAsyncThunk(
     'trades/fetchTradeList',
     async (uuid: string) => {
         const response = await (await fetch(`https://minecraft-markets.herokuapp.com/user/${uuid}/trades`)).json();
-        console.log(response)
         return response.trades
     }
 )

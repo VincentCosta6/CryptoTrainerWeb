@@ -79,7 +79,6 @@ interface AddCandlePayload {
 
 export const priceReducers = {
     addCandle: (state: PriceState, action: PayloadAction<AddCandlePayload>) => {
-        console.log(action.payload.interval)
         state.prices[action.payload.ticker][action.payload.intervalName].push(action.payload.interval)
     },
     setCandle: (state: PriceState, action: PayloadAction<SetCandlePayload>) => {
@@ -125,8 +124,6 @@ const priceSlice = createSlice({
         builder.addCase(fetchCoinPrice.fulfilled, (state: PriceState, action) => {
             /*x: new Date(candle[0] * 1000),
                 y: [candle[1], candle[2], candle[3], candle[4]]*/
-
-                console.log(action.payload.result[action.payload.intervalName])
 
             const candleSticks = action.payload.result[action.payload.intervalName].map((arr: any) => ({
                 x: arr[0] * 1000,

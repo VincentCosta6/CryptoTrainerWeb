@@ -48,7 +48,12 @@ const init = (reconnectAttempt: boolean) => {
     }
 
     if (data.type === 'tradesUpdate') {
-      dispatch(addTrades(data.trades))
+      const ticker = store.getState().coins.selectedCoin
+
+      dispatch(addTrades({
+        ticker,
+        trades: data.trades
+      }))
     }
 
     if (data.type === 'marketUpdate') {

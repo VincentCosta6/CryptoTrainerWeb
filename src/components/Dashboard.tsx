@@ -36,7 +36,7 @@ const Dashboard = (props: Props) => {
                 </div>
                 <div style = {{ overflowY: 'hidden', color: '#8a939f', borderLeft: '1px solid #262d34', padding: 10, minWidth: 100, minHeight: '100%' }}>
                     {
-                        [...props.marketTrades].reverse().map((trade: MarketTradeType) => <MarketTrade key={trade.externalId} trade={trade} />)
+                        [...props.marketTrades[props.selectedCrypto]].reverse().map((trade: MarketTradeType) => <MarketTrade key={trade.externalId} trade={trade} />)
                     }
                 </div>
             </div>

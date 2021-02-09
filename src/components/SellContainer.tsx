@@ -72,7 +72,7 @@ export const TradingActionContainer = (props: Props) => {
     const newMoney = Number(sellField) * Number(price) - fees
 
     const newBalance = Number(props.dollarBalance) + newMoney
-    const remainingCoins =  maxSell ? 0 : Number(props.coinBalance[props.selectedCrypto]) - Number(sellField)
+    const remainingCoins =  maxSell ? 0 : Number(props.coinBalance[props.selectedCrypto] || 0) - Number(sellField)
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', borderBottom: '1px solid #262d34' }}>
@@ -84,7 +84,7 @@ export const TradingActionContainer = (props: Props) => {
                         variant="text"
                         size="small"
                         onClick={() => {
-                            setSellField(toFixed(Number(props.coinBalance[props.selectedCrypto]), 6) + "")
+                            setSellField(toFixed(Number(props.coinBalance[props.selectedCrypto] || 0), 6) + "")
                             setMaxSell(true)
                         }}
                     >

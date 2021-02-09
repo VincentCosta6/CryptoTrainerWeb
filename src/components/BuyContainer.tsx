@@ -70,7 +70,7 @@ export const BuyContainer = (props: Props) => {
 
     const newCoins = Number(actualBuyingPower) / Number(price)
 
-    const newCoinBalance = Number(props.coinBalance[props.selectedCrypto]) + newCoins
+    const newCoinBalance = Number(props.coinBalance[props.selectedCrypto] || 0) + newCoins
     const remainingBalance = maxBuy ? 0 : props.dollarBalance - Number(buyField)
 
     /*const newBalance = Number(props.dollarBalance) + newMoney
@@ -86,7 +86,7 @@ export const BuyContainer = (props: Props) => {
                         variant="text"
                         size="small"
                         onClick={() => {
-                            setBuyField(props.dollarBalance + "")
+                            setBuyField((props.dollarBalance || 0) + "")
                             setMaxBuy(true)
                         }}
                     >

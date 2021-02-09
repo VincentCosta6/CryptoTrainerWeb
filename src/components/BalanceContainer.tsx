@@ -39,7 +39,7 @@ export const BalanceContainer = (props: Props) => {
             <h2>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(props.lastPrice, 2)}</h2>
             <p>Balance:</p>
             <p>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</p>
-            <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto]), 6)}</p>
+            <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] || 0), 6)}</p>
         </div>
     )
 };

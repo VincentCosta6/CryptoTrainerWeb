@@ -7,6 +7,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ReactEcharts from 'echarts-for-react';
 import { fetchCoinPrice, setTimeInterval } from '../redux/reducers/price';
 import { generateChart } from './chartOptions';
+import { clearTrades } from '../redux/reducers/marketTrades';
 
 export const ChartContainer = (props: Props) => {
     const dispatch = useAppDispatch()
@@ -46,7 +47,10 @@ export const ChartContainer = (props: Props) => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     value={props.selectedInterval}
-                    onChange={(event: any) => dispatch(setTimeInterval(event.target.value))}
+                    onChange={(event: any) => {
+                        dispatch(setTimeInterval(event.target.value))
+                        dispatch(clearTrades(props.selectedCrypto))
+                    }}
                 >
                     <MenuItem value="300">5M</MenuItem>
                     <MenuItem value="900">15M</MenuItem>

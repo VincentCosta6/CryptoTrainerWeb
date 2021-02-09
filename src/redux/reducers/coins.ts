@@ -1,4 +1,4 @@
-import { createSlice, createAction, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
 interface UpdateCoinPrice {
     ticker: string,

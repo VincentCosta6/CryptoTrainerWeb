@@ -17,7 +17,8 @@ interface TradeState {
 
 const initialState = {
     trades: {
-        'btcusd': []
+        'btcusd': [],
+        'ethusd': [],
     },
     loading: 'idle',
 } as TradeState

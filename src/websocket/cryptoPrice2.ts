@@ -30,8 +30,6 @@ const init = () => {
       return
     }
 
-    console.log(data)
-
     const ticker = store.getState().coins.selectedCoin
     const intervalSelected = store.getState().price.selectedInterval
 

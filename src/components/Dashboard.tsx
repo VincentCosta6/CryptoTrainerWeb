@@ -84,17 +84,14 @@ const Dashboard = (props: Props) => {
             const intervals = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => candle.x)
             // O: 0, H: 1, L: 2, C: 3
             // O C L H
-            const sliceNumber = props.prices[props.selectedCrypto][props.selectedInterval].length - 100
 
-            const seriesData = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => [candle.y[0], candle.y[3], candle.y[2], candle.y[1]]).slice(sliceNumber)
+            const seriesData = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => [candle.y[0], candle.y[3], candle.y[2], candle.y[1]])
             const volumes = props.prices[props.selectedCrypto][props.selectedInterval].map((candle, index) => {
-                const sameCandle = props.prices[props.selectedCrypto][props.selectedInterval][index]
-
-                const candleOpen = sameCandle.y[0]
-                const candleClosed = sameCandle.y[3]
+                const candleOpen = candle.y[0]
+                const candleClosed = candle.y[3]
 
                 return [index, candle.z[0], candleOpen < candleClosed ? 1 : -1]
-            }).slice(sliceNumber)
+            })
 
             const upColor = '#47b262'
             const downColor = '#eb5454'
@@ -240,17 +237,7 @@ const Dashboard = (props: Props) => {
                 ],
                 darkMode: true
             }
-
-            if(false) {
-                // @ts-ignore
-                chart.current.setOption({
-                    series: [{
-                        data: seriesData
-                    }]
-                })
-            } else {
-                setChartData(options)
-            }
+            setChartData(options)
         }
     }, [props.prices])
 
@@ -327,7 +314,7 @@ const Dashboard = (props: Props) => {
     return (
         <div style={{ flexGrow: 1 }}>
             <div style={{ display: 'flex', height: '100%' }}>
-                <div style={{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10 }}>
+                <div style={{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10, minWidth: 300 }}>
                     <div style={{ borderBottom: '1px solid #262d34', marginBottom: 15 }}>
                         <h2>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(props.lastPrice, 2)}</h2>
                         <p>Balance:</p>

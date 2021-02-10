@@ -4,6 +4,16 @@ interface PriceKey {
     [interval: string]: Array<ApexCandle>
 }
 
+export const timeIntervalsList = [
+    {value: '60', name: '1M'}, 
+    {value: '300', name: '5M'}, 
+    {value: '900', name: '15M'}, 
+    {value: '3600', name: '1H'}, 
+    {value: '14400', name: '4H'}, 
+    {value: '86400', name: '1D'}, 
+]
+export const timeIntervalsArr = timeIntervalsList.map(interval => interval.value)
+
 type TimeIntervals = '300' | '900' | '3600'
 type ConnectionStatus = 'idle' | 'pending' | 'success' | 'error'
 
@@ -20,23 +30,7 @@ interface PriceState {
 }
 
 const initialState = {
-    prices: {
-        btcusd: {
-            '300': [],
-            '900': [],
-            '3600': [],
-        },
-        ethusd: {
-            '300': [],
-            '900': [],
-            '3600': [],
-        },
-        dogeusdt: {
-            '300': [],
-            '900': [],
-            '3600': [],
-        },
-    },
+    prices: {},
     lastPrice: 38000,
     selectedInterval: '300',
     subscriptions: [],
@@ -49,6 +43,7 @@ interface FetchCoinPriceParameters {
     ticker: string
     exchange: string
     interval: string
+    coins: Array<string>
 }
 
 export const fetchCoinPrice = createAsyncThunk(
@@ -60,6 +55,7 @@ export const fetchCoinPrice = createAsyncThunk(
             result: response.result,
             ticker: params.ticker,
             intervalName: params.interval,
+            coins: params.coins,
         }
     }
 )
@@ -136,6 +132,20 @@ const priceSlice = createSlice({
                 y: [arr[1], arr[2], arr[3], arr[4]],
                 z: [arr[5], arr[6]]
             }))
+
+            const coins = action.payload.coins
+            const intervalsObj = timeIntervalsArr.reduce((acc: { [interval: string]: Array<any> }, interval: string) => {
+                acc[interval] = []
+                return acc
+            }, {})
+
+            const pricesObj = coins.reduce((acc: { [ticker: string]: any }, coin: string) => {
+                const copy = JSON.parse(JSON.stringify(intervalsObj))
+                acc[coin] = copy
+                return acc
+            }, {})
+
+            state.prices = pricesObj
             
             state.prices[action.payload.ticker][action.payload.intervalName] = candleSticks
 

@@ -5,7 +5,7 @@ import { connect, ConnectedProps } from 'react-redux'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ReactEcharts from 'echarts-for-react';
-import { fetchCoinPrice, setTimeInterval } from '../redux/reducers/price';
+import { fetchCoinPrice, setTimeInterval, timeIntervalsList } from '../redux/reducers/price';
 import { generateChart } from './chartOptions';
 import { clearTrades } from '../redux/reducers/marketTrades';
 
@@ -18,7 +18,8 @@ export const ChartContainer = (props: Props) => {
         dispatch(fetchCoinPrice({
             ticker: props.selectedCrypto,
             exchange: props.coinMap[props.selectedCrypto].exchange,
-            interval: props.selectedInterval
+            interval: props.selectedInterval,
+            coins: props.coins,
         }))
     }, [props.selectedInterval, props.selectedCrypto])
 
@@ -53,16 +54,14 @@ export const ChartContainer = (props: Props) => {
                         dispatch(clearTrades(props.selectedCrypto))
                     }}
                 >
-                    <MenuItem value="300">5M</MenuItem>
-                    <MenuItem value="900">15M</MenuItem>
-                    <MenuItem value="3600">1H</MenuItem>
+                    { timeIntervalsList.map(interval => <MenuItem key = {interval.value} value={interval.value}>{interval.name}</MenuItem>) }
                 </Select>
             </div>
             {
                 props.candlesLoading === 'success' && chartData && (
                     <ReactEcharts
                         option={chartData}
-                        notMerge={false}
+                        notMerge={true}
                         lazyUpdate={true}
                     />
                 )
@@ -73,6 +72,7 @@ export const ChartContainer = (props: Props) => {
 
 const mapStateToProps = (state: RootState) => ({
     candlesLoading: state.price.loading,
+    coins: state.coins.coins,
     coinMap: state.coins.map,
     prices: state.price.prices,
     selectedCrypto: state.coins.selectedCoin,

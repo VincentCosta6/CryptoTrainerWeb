@@ -12,17 +12,30 @@ const initialState = {
     loading: 'idle',
 } as UsersCoinsState
 
+interface FetchUsersCoinsByUUIDParams {
+    uuid: string
+    coins: Array<string>
+}
+
 export const fetchUsersCoinsByUUID = createAsyncThunk(
     'users/fetchUsersCoinsByUUID',
-    async (uuid: string) => {
-        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/users/${uuid}/coins/`)).json();
+    async (params: FetchUsersCoinsByUUIDParams) => {
+        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/users/${params.uuid}/coins/`)).json();
+
+        const defaultTickersObj = params.coins.reduce((acc: { [ticker: string]: number }, coin: string) => {
+            acc[coin] = 0
+            return acc
+        }, {})
 
         const tickers = response.coins.reduce((acc: any, coin: any) => {
             acc[coin.coinTicker] = coin.quantity
             return acc
         }, {})
 
-        return tickers
+        return {
+            ...defaultTickersObj,
+            ...tickers
+        }
     }
 )
 

@@ -16,10 +16,17 @@ export const FetchUserInfo = (props: Props) => {
 
     useEffect(() => {
         dispatch(fetchUserByUUID(props.match.params.hashedUser))
-        dispatch(fetchUsersCoinsByUUID(props.match.params.hashedUser))
-        dispatch(fetchTradeList(props.match.params.hashedUser))
+        
+        
         dispatch(fetchCoinList())
     }, [props.match.params.hashedUser])
+
+    useEffect(() => {
+        if (props.coinsLoading === 'success') {
+            dispatch(fetchTradeList({ uuid: props.match.params.hashedUser, coins: props.coins }))
+            dispatch(fetchUsersCoinsByUUID({ uuid: props.match.params.hashedUser, coins: props.coins }))
+        }
+    }, [props.coinsLoading])
 
     if (props.userLoading === 'pending') {
         return <p>Loading...</p>
@@ -31,6 +38,8 @@ export const FetchUserInfo = (props: Props) => {
 }
 
 const mapStateToProps = (state: RootState) => ({
+    coinsLoading: state.coins.loading,
+    coins: state.coins.coins,
     user: state.user,
     userLoading: state.user.loading,
 })

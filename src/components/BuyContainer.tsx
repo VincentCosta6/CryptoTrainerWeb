@@ -42,7 +42,6 @@ export const BuyContainer = (props: Props) => {
                 setMaxBuy(false)
             })
             .catch(err => {
-                console.log(err)
                 props.setBuyLoading(false)
                 setMaxBuy(false)
             })

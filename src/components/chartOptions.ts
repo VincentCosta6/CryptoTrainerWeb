@@ -16,6 +16,20 @@ export const generateChart = (intervals: any, seriesData: any, volumes: any) => 
                 height: '25%'
             }
         ],
+        dataZoom: [
+            {
+                type: 'inside',
+                start: 50,
+                end: 100
+            },
+            {
+                show: true,
+                type: 'slider',
+                top: '90%',
+                start: 50,
+                end: 100
+            }
+        ],
         legend: {
             bottom: 10,
             left: 'center',

@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
+import { Coin } from './coins';
 
 interface Trade {
     ticker: string
@@ -16,19 +17,30 @@ interface TradeState {
 }
 
 const initialState = {
-    trades: {
-        'btcusd': [],
-        'ethusd': [],
-        'dogeusdt': [],
-    },
+    trades: {},
     loading: 'idle',
 } as TradeState
 
+interface FetchTradesPayload {
+    uuid: string
+    coins: Array<string> 
+}
+
 export const fetchTradeList = createAsyncThunk(
     'trades/fetchTradeList',
-    async (uuid: string) => {
-        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/user/${uuid}/trades`)).json();
-        return response.trades
+    async (payload: FetchTradesPayload) => {
+        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/user/${payload.uuid}/trades`)).json();
+
+        const defaultTradesObj = payload.coins.reduce((acc, coin: string) => {
+            // @ts-ignore
+            acc[coin] = []
+            return acc
+        }, {})
+
+        return {
+            ...defaultTradesObj,
+            ...response.trades
+        }
     }
 )
 
@@ -45,7 +57,11 @@ const tradeSlice = createSlice({
     reducers: tradesReducer,
     extraReducers: builder => {
         builder.addCase(fetchTradeList.pending, (state: TradeState, action) => ({ ...state, loading: 'pending' }))
-        builder.addCase(fetchTradeList.fulfilled, (state: TradeState, action) => ({ trades: action.payload, loading: 'success' }))
+        builder.addCase(fetchTradeList.fulfilled, (state: TradeState, action) => {
+            const coinMap = action.payload.coinMap
+
+            return { trades: action.payload, loading: 'success' }
+        })
         builder.addCase(fetchTradeList.rejected, (state: TradeState, action) => ({ ...state, loading: 'error' }))
     }
 })

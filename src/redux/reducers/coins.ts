@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 
-interface Coin {
+export interface Coin {
     name: string,
     ticker: string,
     cryptowatchID: string
@@ -18,7 +18,7 @@ interface CoinState {
 
 const initialState = {
     coins: [],
-    selectedCoin: 'btcusd',
+    selectedCoin: '',
     map: {},
     loading: 'idle',
 } as CoinState

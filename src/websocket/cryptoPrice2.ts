@@ -1,22 +1,12 @@
 import store from '../redux/store'
 
-import { addCandle, setCandle, setLastPrice, setWebsocketStatus, ApexCandle, setWebsocket } from '../redux/reducers/price'
+import { addCandle, setCandle, setLastPrice, setWebsocketStatus } from '../redux/reducers/price'
 import { addTrades } from '../redux/reducers/marketTrades'
-import { addTrade } from '../redux/reducers/trades'
+import { getPriceWithProperZeroes } from '../components/BalanceContainer'
 
 const dispatch = store.dispatch
 
 let cryptoWatchSocketClient: any
-
-function toFixed(num: any, fixed: number) {
-  var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
-  return num.toString().match(re)[0];
-}
-
-function numberWithCommasAndRounded(x: any, length: number) {
-  const fixed = toFixed(x, length)
-  return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-}
 
 const init = (reconnectAttempt: boolean) => {
   cryptoWatchSocketClient = new WebSocket(`wss://minecraft-markets.herokuapp.com/websocket`);
@@ -70,7 +60,7 @@ const init = (reconnectAttempt: boolean) => {
       const currentUnixTimestamp = Math.floor(currentInterval.x)
 
       dispatch(setLastPrice(data.candle.y[3]))
-      document.title = numberWithCommasAndRounded(data.candle.y[3], 2)
+      document.title = getPriceWithProperZeroes(data.candle.y[3])
 
       if (currentUnixTimestamp === Math.floor(data.candle.x)) {
         dispatch(setCandle({

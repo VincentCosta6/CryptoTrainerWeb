@@ -5,12 +5,12 @@ import { connect, ConnectedProps } from 'react-redux'
 
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-function toFixed(num: any, fixed: number) {
+export function toFixed(num: any, fixed: number) {
     var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
     return num.toString().match(re)[0];
 }
 
-function numberWithCommasAndRounded(x: any, length: number) {
+export function numberWithCommasAndRounded(x: any, length: number) {
     const fixed = toFixed(x, length)
     return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -18,11 +18,30 @@ function numberWithCommasAndRounded(x: any, length: number) {
 export const tickerMap: any = {
     'btcusd': 'BTC/USD',
     'ethusd': 'ETH/USD',
+    'dogeusdt': 'DOGE/USDT'
 }
 
-const nameMap: any = {
+export const nameMap: any = {
     'bitcoin': 'Bitcoin',
     'ethereum': 'Ethereum',
+    'dogecoin': 'Dogecoin',
+}
+
+export function getPriceWithProperZeroes(price: number | string) {
+    const pricenNum = Number(price)
+    let zeroes = 2
+
+    if (price < 1) {
+        zeroes = 10
+    } else if (price < 100) {
+        zeroes = 8
+    } else if (price < 1000) {
+        zeroes = 6
+    } else if (price < 10000) {
+        zeroes = 4
+    }
+
+    return toFixed(pricenNum, zeroes)
 }
 
 export const BalanceContainer = (props: Props) => {
@@ -34,10 +53,11 @@ export const BalanceContainer = (props: Props) => {
         )
     }
 
+    const tickerPrice = getPriceWithProperZeroes(props.lastPrice)
+
     return (
         <div style={{ borderBottom: '1px solid #262d34', marginBottom: 15 }}>
-            <h2>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(props.lastPrice, 2)}</h2>
-            <p>Balance:</p>
+            <h2>{tickerMap[props.selectedCrypto]}: ${tickerPrice}</h2>
             <p>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</p>
             <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] || 0), 6)}</p>
         </div>

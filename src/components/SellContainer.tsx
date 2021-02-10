@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import BalanceContainer, { tickerMap } from './BalanceContainer'
+import BalanceContainer, { getPriceWithProperZeroes, numberWithCommasAndRounded, tickerMap, toFixed } from './BalanceContainer'
 
 import { RootState, useAppDispatch } from '../redux/store'
 import { connect, ConnectedProps } from 'react-redux'
@@ -15,21 +15,6 @@ import Button from '@material-ui/core/Button'
 import InputBase from '@material-ui/core/InputBase'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
-function toFixed(num: any, fixed: number) {
-    var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
-    return num.toString().match(re)[0];
-}
-
-function numberWithCommasAndRounded(x: any, length: number) {
-    const fixed = toFixed(x, length)
-    return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-}
-
-const nameMap: any = {
-    'bitcoin': 'Bitcoin',
-    'ethereum': 'Ethereum',
-}
-
 export const TradingActionContainer = (props: Props) => {
     const dispatch = useAppDispatch()
 
@@ -38,7 +23,7 @@ export const TradingActionContainer = (props: Props) => {
 
     const handleSell = () => {
         props.setSellLoading(true)
-        fetch(`https://minecraft-markets.herokuapp.com/coins/sell/${props.selectedCrypto}`, {
+        fetch(`https://minecraft-markets.herokuapp.com/coins/sell/${props.coinMap[props.selectedCrypto].exchange}/${props.selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -66,8 +51,8 @@ export const TradingActionContainer = (props: Props) => {
             })
     }
 
-    const price = Number(props.lastPrice) * .99985
-    const fees = Number(sellField) * .01 * price
+    const price = getPriceWithProperZeroes(Number(props.lastPrice) * .99985)
+    const fees = Number(sellField) * .003 * price
 
     const newMoney = Number(sellField) * Number(price) - fees
 
@@ -125,10 +110,10 @@ export const TradingActionContainer = (props: Props) => {
             </div>
             <div style={{ marginTop: 10 }}>
                 <div style={{ marginLeft: 7 }}>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(price, 2)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Price: ${price}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: ${numberWithCommasAndRounded(newBalance, 2)} (+${numberWithCommasAndRounded(newMoney, 2)})</p>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining {numberWithCommasAndRounded(remainingCoins, 6)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: {numberWithCommasAndRounded(remainingCoins, 6)}</p>
                 </div>
             </div>
         </div>

@@ -10,22 +10,7 @@ import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import InputBase from '@material-ui/core/InputBase'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import { tickerMap } from './BalanceContainer'
-
-function toFixed(num: any, fixed: number) {
-    var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
-    return num.toString().match(re)[0];
-}
-
-function numberWithCommasAndRounded(x: any, length: number) {
-    const fixed = toFixed(x, length)
-    return fixed.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
-}
-
-const nameMap: any = {
-    'bitcoin': 'Bitcoin',
-    'ethereum': 'Ethereum',
-}
+import { getPriceWithProperZeroes, numberWithCommasAndRounded, tickerMap } from './BalanceContainer'
 
 export const BuyContainer = (props: Props) => {
     const dispatch = useAppDispatch()
@@ -35,7 +20,7 @@ export const BuyContainer = (props: Props) => {
 
     const handleBuy = () => {
         props.setBuyLoading(true)
-        fetch(`https://minecraft-markets.herokuapp.com/coins/buy/${props.selectedCrypto}`, {
+        fetch(`https://minecraft-markets.herokuapp.com/coins/buy/${props.coinMap[props.selectedCrypto].exchange}/${props.selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -63,8 +48,8 @@ export const BuyContainer = (props: Props) => {
             })
     }
 
-    const price = Number(props.lastPrice) * 1.0005
-    const fees = Number(buyField) * .01
+    const price = getPriceWithProperZeroes(Number(props.lastPrice) * 1.0005)
+    const fees = Number(buyField) * .003
 
     const actualBuyingPower = Number(buyField) - fees
 
@@ -127,10 +112,10 @@ export const BuyContainer = (props: Props) => {
             </div>
             <div style={{ marginTop: 10 }}>
                 <div style={{ marginLeft: 7 }}>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>{tickerMap[props.selectedCrypto]}: ${numberWithCommasAndRounded(price, 2)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Price: ${price}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: {numberWithCommasAndRounded(newCoinBalance, 6)}</p>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining ${numberWithCommasAndRounded(remainingBalance, 2)}</p>
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: ${numberWithCommasAndRounded(remainingBalance, 2)}</p>
                 </div>
             </div>
         </div>

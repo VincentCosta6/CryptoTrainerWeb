@@ -61,7 +61,7 @@ export const ChartContainer = (props: Props) => {
                 props.candlesLoading === 'success' && chartData && (
                     <ReactEcharts
                         option={chartData}
-                        notMerge={true}
+                        notMerge={false}
                         lazyUpdate={true}
                     />
                 )

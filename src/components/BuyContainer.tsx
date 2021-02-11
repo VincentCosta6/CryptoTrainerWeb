@@ -128,7 +128,7 @@ export const BuyContainer = (props: Props) => {
                                 value={leverage}
                                 min={5}
                                 step={1}
-                                max={11}
+                                max={10}
                                 marks={[
                                     { value: 5, label: '25x' },
                                     { value: 6, label: '50x' },

@@ -18,19 +18,20 @@ import Slider from '@material-ui/core/Slider'
 import Typography from '@material-ui/core/Typography'
 
 const leverageMap = {
-    2: 2,
-    3: 5,
-    4: 10,
     5: 25,
     6: 50,
-    7: 100
+    7: 100,
+    8: 250,
+    9: 500,
+    10: 1000,
+    11: 10000
 }
 
 export const BuyContainer = (props: Props) => {
     const dispatch = useAppDispatch()
 
     const [useLeverage, setUseLeverage] = useState(false)
-    const [leverage, setLeverage] = useState<number>(2)
+    const [leverage, setLeverage] = useState<number>(5)
     const [maxBuy, setMaxBuy] = useState(false)
     const [buyField, setBuyField] = useState('')
 
@@ -126,16 +127,17 @@ export const BuyContainer = (props: Props) => {
                             <Slider
                                 style = {{ color: '#2eae34' }}
                                 value={leverage}
-                                min={2}
+                                min={5}
                                 step={1}
-                                max={7}
+                                max={11}
                                 marks={[
-                                    { value: 2, label: '2x' },
-                                    { value: 3, label: '5x' },
-                                    { value: 4, label: '10x' },
                                     { value: 5, label: '25x' },
                                     { value: 6, label: '50x' },
                                     { value: 7, label: '100x' },
+                                    { value: 8, label: '250x' },
+                                    { value: 9, label: '500x' },
+                                    { value: 10, label: '1000x' },
+                                    { value: 11, label: '10000x' },
                                 ]}
                                 onChange={(event, newVal: any) => setLeverage(newVal)}
                                 valueLabelDisplay="auto"

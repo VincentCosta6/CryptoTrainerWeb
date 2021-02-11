@@ -4,6 +4,7 @@ import { addCandle, setCandle, setLastPrice, setWebsocketStatus } from '../redux
 import { addTrades } from '../redux/reducers/marketTrades'
 import { getPriceWithProperZeroes } from '../components/BalanceContainer'
 import { removeLeveragedTrade } from '../redux/reducers/leveragedTrade'
+import { addLiquidation } from '../redux/reducers/liquidations'
 
 const dispatch = store.dispatch
 
@@ -14,10 +15,14 @@ const init = (reconnectAttempt: boolean) => {
 
   dispatch(setWebsocketStatus('pending'))
 
+  let myUUID: any
+
   cryptoWatchSocketClient.onopen = () => {
     const selectedCrypto = store.getState().coins.selectedCoin
 
     dispatch(setWebsocketStatus('success'))
+
+    myUUID = store.getState().user.uuid
 
     if (reconnectAttempt) {
       // @ts-ignore
@@ -39,8 +44,15 @@ const init = (reconnectAttempt: boolean) => {
     }
 
     if (data.type === 'liquidationNotice') {
-      dispatch(removeLeveragedTrade(data.leveragedTrade))
-      alert('You have been liquidated')
+      if (myUUID === data.type.leveragedTrade.playerUUID) {
+        const liquidations = store.getState().liquidations.liquidations
+
+        if (!liquidations.find(liquid => liquid._id === data.type.leveragedTrade.playerUUID)) {
+          dispatch(addLiquidation(data.leveragedTrade))
+          dispatch(removeLeveragedTrade(data.leveragedTrade))
+        }
+      }
+      
     } 
 
     if (data.type === 'tradesUpdate') {

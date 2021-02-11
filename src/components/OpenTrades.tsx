@@ -16,6 +16,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import { upColor } from './chartOptions';
 import { setDollars } from '../redux/reducers/user';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import { removeLiquidations } from '../redux/reducers/liquidations';
 
 export const OpenTrades = (props: Props) => {
     const dispatch = useAppDispatch()
@@ -80,7 +82,7 @@ export const OpenTrades = (props: Props) => {
                 </DialogContent>
                 <DialogActions style={{ backgroundColor: '#262d34' }}>
                     <Button onClick={() => {
-                        if (!executionLoading) 
+                        if (!executionLoading)
                             setTradeChosen(null)
                     }} color="primary">
                         Back

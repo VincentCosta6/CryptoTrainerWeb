@@ -56,18 +56,20 @@ const Dashboard = (props: Props) => {
 const LiquidationNotice = ({ liquidations, dispatch, lastPrice }: { liquidations: any, dispatch: any, lastPrice: number }) => (
     <Dialog
         open={liquidations.length > 0}
+        // @ts-ignore
         onClose={() => dispatch(removeLiquidations())}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
+        style={{ color: '#8a939e' }}
     >
-        <DialogTitle id="alert-dialog-title">{liquidations.length === 1 ? 'Your position was liquidated' : 'Your positions were liquidated'}</DialogTitle>
-        <DialogContent>
+        <DialogTitle id="alert-dialog-title" style={{ backgroundColor: '#262d34', color: '#8a939e' }}>{liquidations.length === 1 ? 'Your position was liquidated' : 'Your positions were liquidated'}</DialogTitle>
+        <DialogContent style={{ backgroundColor: '#262d34' }}>
             <List component="nav" aria-label="main mailbox folders">
                 {
                     // @ts-ignore
                     liquidations.map((trade: LeveragedTradeType) => (
                         <ListItem button key={trade._id}>
-                            <div style = {{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                            <div style = {{ width: '100%', display: 'flex', justifyContent: 'space-between', color: '#8a939e' }}>
                                 <p>{tickerMap[trade.ticker]}</p>
                                 <div style={{ display: 'flex', marginBottom: 0 }}>
                                     <p style={{ color: trade.type === 'BUY' ? 'green' : 'red' }}> {trade.type}</p>
@@ -80,7 +82,8 @@ const LiquidationNotice = ({ liquidations, dispatch, lastPrice }: { liquidations
                 }
             </List>
         </DialogContent>
-        <DialogActions>
+        <DialogActions style={{ backgroundColor: '#262d34' }}>
+            { /* @ts-ignore */}
             <Button onClick={() => dispatch(removeLiquidations())} color="primary">
                 Close
             </Button>

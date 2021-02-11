@@ -44,10 +44,11 @@ const init = (reconnectAttempt: boolean) => {
     }
 
     if (data.type === 'liquidationNotice') {
-      if (myUUID === data.type.leveragedTrade.playerUUID) {
-        const liquidations = store.getState().liquidations.liquidations
+      if (myUUID === data.leveragedTrade.playerUUID) {
+        const liquidations = store.getState().liquidations
 
-        if (!liquidations.find(liquid => liquid._id === data.type.leveragedTrade.playerUUID)) {
+        if (!liquidations.liquidations.find(liquid => liquid._id === data.leveragedTrade.playerUUID) && 
+            !liquidations.alreadyLiquidated.find(liquid => liquid._id === data.leveragedTrade.playerUUID)) {
           dispatch(addLiquidation(data.leveragedTrade))
           dispatch(removeLeveragedTrade(data.leveragedTrade))
         }

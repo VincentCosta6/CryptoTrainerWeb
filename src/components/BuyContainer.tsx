@@ -24,7 +24,6 @@ const leverageMap = {
     8: 50,
     9: 100,
     10: 500,
-    11: 5000,
 }
 
 export const BuyContainer = (props: Props) => {
@@ -129,7 +128,7 @@ export const BuyContainer = (props: Props) => {
                                 value={leverage}
                                 min={5}
                                 step={1}
-                                max={11}
+                                max={10}
                                 marks={[
                                     { value: 5, label: '5x' },
                                     { value: 6, label: '10x' },
@@ -137,7 +136,6 @@ export const BuyContainer = (props: Props) => {
                                     { value: 8, label: '50x' },
                                     { value: 9, label: '100x' },
                                     { value: 10, label: '500x' },
-                                    { value: 11, label: '5000x' },
                                 ]}
                                 onChange={(event, newVal: any) => setLeverage(newVal)}
                                 valueLabelDisplay="auto"

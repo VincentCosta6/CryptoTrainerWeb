@@ -29,7 +29,7 @@ interface FetchTradesPayload {
 export const fetchTradeList = createAsyncThunk(
     'trades/fetchTradeList',
     async (payload: FetchTradesPayload) => {
-        const response = await (await fetch(`https://minecraft-markets.herokuapp.com/user/${payload.uuid}/trades`)).json();
+        const response = await (await fetch(`https://api.minecraftmarkets.com/user/${payload.uuid}/trades`)).json();
 
         const defaultTradesObj = payload.coins.reduce((acc, coin: string) => {
             // @ts-ignore

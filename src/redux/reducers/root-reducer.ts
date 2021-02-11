@@ -6,6 +6,7 @@ import usersCoinsReducer from './usersCoins'
 import priceReducer from './price'
 import tradesReducer from './trades'
 import marketTradesReducer from './marketTrades'
+import leveragedTradeReducer from './leveragedTrade'
 
 export default combineReducers({
     coins: coinReducer,
@@ -13,5 +14,6 @@ export default combineReducers({
     usersCoins: usersCoinsReducer,
     price: priceReducer,
     trades: tradesReducer,
-    marketTrades: marketTradesReducer
+    marketTrades: marketTradesReducer,
+    leveragedTrades: leveragedTradeReducer,
 })

@@ -23,7 +23,7 @@ export const TradingActionContainer = (props: Props) => {
 
     const handleSell = () => {
         props.setSellLoading(true)
-        fetch(`https://minecraft-markets.herokuapp.com/coins/sell/${props.coinMap[props.selectedCrypto].exchange}/${props.selectedCrypto}`, {
+        fetch(`https://api.minecraftmarkets.com/coins/sell/${props.coinMap[props.selectedCrypto].exchange}/${props.selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

@@ -27,7 +27,7 @@ export const TradingActionContainer = (props: Props) => {
     return (
         <div>
             <ToggleButtonGroup
-                style={{ width: '100%', maxHeight: 50 }}
+                style={{ width: '100%', maxHeight: 35 }}
                 value={toggleInput}
                 exclusive
                 onChange={(event: any, newAlignment: any) => setToggleInput(newAlignment)}

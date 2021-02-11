@@ -25,7 +25,7 @@ const Dashboard = (props: Props) => {
     return (
         <div style={{ height: '90vh' }}>
             <div style={{ display: 'flex', height: '100%' }}>
-                <div style={{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10, minWidth: 300 }}>
+                <div style={{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10, maxWidth: 350, minWidth: 350 }}>
                    <LeftPanel />
                 </div>
                 <div style={{ flexGrow: 1 }}>

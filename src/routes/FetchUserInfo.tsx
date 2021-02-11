@@ -5,6 +5,7 @@ import { fetchUserByUUID } from '../redux/reducers/user'
 import { fetchUsersCoinsByUUID } from '../redux/reducers/usersCoins'
 import { fetchCoinList } from '../redux/reducers/coins'
 import { fetchTradeList } from '../redux/reducers/trades'
+import { fetchLeveragedTradesList } from '../redux/reducers/leveragedTrade'
 
 import { RootState } from '../redux/store'
 import { connect, ConnectedProps } from 'react-redux'
@@ -25,6 +26,7 @@ export const FetchUserInfo = (props: Props) => {
         if (props.coinsLoading === 'success') {
             dispatch(fetchTradeList({ uuid: props.match.params.hashedUser, coins: props.coins }))
             dispatch(fetchUsersCoinsByUUID({ uuid: props.match.params.hashedUser, coins: props.coins }))
+            dispatch(fetchLeveragedTradesList({ uuid: props.match.params.hashedUser, coins: props.coins }))
         }
     }, [props.coinsLoading])
 

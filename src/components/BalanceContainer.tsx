@@ -53,12 +53,9 @@ export const BalanceContainer = (props: Props) => {
         )
     }
 
-    const tickerPrice = getPriceWithProperZeroes(props.lastPrice)
-
     return (
-        <div style={{ borderBottom: '1px solid #262d34', marginBottom: 15 }}>
-            <h2>{tickerMap[props.selectedCrypto]}: ${tickerPrice}</h2>
-            <p>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</p>
+        <div style={{ borderBottom: '1px solid #262d34', marginBottom: 5, marginTop: 0 }}>
+            <p style={{ marginTop: 0 }}>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</p>
             <p>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] || 0), 6)}</p>
         </div>
     )

@@ -8,6 +8,7 @@ import ReactEcharts from 'echarts-for-react';
 import { fetchCoinPrice, setTimeInterval, timeIntervalsList } from '../redux/reducers/price';
 import { generateChart } from './chartOptions';
 import { clearTrades } from '../redux/reducers/marketTrades';
+import { getPriceWithProperZeroes, tickerMap } from './BalanceContainer';
 
 export const ChartContainer = (props: Props) => {
     const dispatch = useAppDispatch()
@@ -41,21 +42,26 @@ export const ChartContainer = (props: Props) => {
         }
     }, [props.prices])
 
+    const tickerPrice = getPriceWithProperZeroes(props.lastPrice)
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div style={{ display: 'flex' }}>
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={props.selectedInterval}
-                    onChange={(event: any) => {
-                        dispatch(setTimeInterval(event.target.value))
-                        dispatch(clearTrades(props.selectedCrypto))
-                    }}
-                >
-                    { timeIntervalsList.map(interval => <MenuItem key = {interval.value} value={interval.value}>{interval.name}</MenuItem>) }
-                </Select>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                <h2 style={{ marginBottom: 0, color: '#8a939f',  }}>{tickerMap[props.selectedCrypto]}: ${tickerPrice}</h2>
+                <div>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={props.selectedInterval}
+                        onChange={(event: any) => {
+                            dispatch(setTimeInterval(event.target.value))
+                            dispatch(clearTrades(props.selectedCrypto))
+                        }}
+                        style={{ color: 'inherit' }}
+                    >
+                        { timeIntervalsList.map(interval => <MenuItem key = {interval.value} value={interval.value}>{interval.name}</MenuItem>) }
+                    </Select>
+                </div>
             </div>
             {
                 props.candlesLoading === 'success' && chartData && (
@@ -74,6 +80,7 @@ const mapStateToProps = (state: RootState) => ({
     candlesLoading: state.price.loading,
     coins: state.coins.coins,
     coinMap: state.coins.map,
+    lastPrice: state.price.lastPrice,
     prices: state.price.prices,
     selectedCrypto: state.coins.selectedCoin,
     selectedInterval: state.price.selectedInterval,

@@ -3,13 +3,14 @@ import store from '../redux/store'
 import { addCandle, setCandle, setLastPrice, setWebsocketStatus } from '../redux/reducers/price'
 import { addTrades } from '../redux/reducers/marketTrades'
 import { getPriceWithProperZeroes } from '../components/BalanceContainer'
+import { removeLeveragedTrade } from '../redux/reducers/leveragedTrade'
 
 const dispatch = store.dispatch
 
 let cryptoWatchSocketClient: any
 
 const init = (reconnectAttempt: boolean) => {
-  cryptoWatchSocketClient = new WebSocket(`wss://minecraft-markets.herokuapp.com/websocket`);
+  cryptoWatchSocketClient = new WebSocket(`wss://api.minecraftmarkets.com/websocket`);
 
   dispatch(setWebsocketStatus('pending'))
 
@@ -36,6 +37,11 @@ const init = (reconnectAttempt: boolean) => {
     if (data.status) {
       return
     }
+
+    if (data.type === 'liquidationNotice') {
+      dispatch(removeLeveragedTrade(data.leveragedType))
+      alert('You have been liquidated')
+    } 
 
     if (data.type === 'tradesUpdate') {
       const ticker = store.getState().coins.selectedCoin

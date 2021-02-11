@@ -110,7 +110,6 @@ export const TradingActionContainer = (props: Props) => {
             </div>
             <div style={{ marginTop: 10 }}>
                 <div style={{ marginLeft: 7 }}>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>Price: ${price}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: ${numberWithCommasAndRounded(newBalance, 2)} (+${numberWithCommasAndRounded(newMoney, 2)})</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: {numberWithCommasAndRounded(remainingCoins, 6)}</p>

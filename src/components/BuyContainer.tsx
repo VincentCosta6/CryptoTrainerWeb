@@ -89,7 +89,7 @@ export const BuyContainer = (props: Props) => {
             })
     }
 
-    const price = getPriceWithProperZeroes(Number(props.lastPrice) * 1.0005)
+    const price = getPriceWithProperZeroes(Number(props.lastPrice))
     const fees = Number(buyField) * .003
 
     const actualBuyingPower = Number(buyField) - fees
@@ -200,7 +200,6 @@ export const BuyContainer = (props: Props) => {
                             <p style={{ marginTop: 0, marginLeft: 10 }}>Leveraged buying power: ${numberWithCommasAndRounded(leveragedBuyingPower, 2)}</p>
                         )
                     }
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>Price: ${price}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: {numberWithCommasAndRounded(newCoinBalance, 6)}</p>
                     <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: ${numberWithCommasAndRounded(remainingBalance, 2)}</p>

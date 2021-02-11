@@ -22,15 +22,21 @@ export const OpenTradeView = ({ trade, lastPrice }: Props) => {
     const percentageIncrease = leveragedChange / Number(trade.initialMargin) * 100
 
     return (
-        <div>
-            <p>Trade Type: {trade.type}</p>
-            <p>Trade Leverage: {trade.leverageTimes}x</p>
+        <div style={{ color: '#8a939e' }}>
+            <div style={{ display: 'flex', marginBottom: 0 }}>
+                <p>Trade Type: </p>
+                <p style={{ color: trade.type === 'BUY' ? 'green' : 'red' }}>{trade.type}</p>
+            </div>
             <p>Initial Investment: {numberWithCommasAndRounded(Number(trade.initialMargin), 2)}</p>
-            <p>Total starting power: ${numberWithCommasAndRounded(Number(trade.leveragedBuyingPower), 2)}</p>
+            <p>Trade Leverage: {trade.leverageTimes}x</p>
             <p>Purchase Price: ${getPriceWithProperZeroes(Number(trade.executedPrice))}</p>
+            <p>Total starting power: ${numberWithCommasAndRounded(Number(trade.leveragedBuyingPower), 2)}</p>
             <p>Total power: ${getPriceWithProperZeroes(currentValue)}</p>
-            <p>Position Change: ${numberWithCommasAndRounded(leveragedChange, 2)}</p>
-            <p style={{ color: percentageIncrease < 0 ? 'red' : 'green' }}>{percentageIncrease > 0 ? '+' : ''}{numberWithCommasAndRounded(percentageIncrease, 2)}%</p>
+
+            <div style={{ display: 'flex' }}>
+                <p>Position Change: ${numberWithCommasAndRounded(leveragedChange, 2)}</p>
+                <p style={{ color: percentageIncrease < 0 ? 'red' : 'green' }}>{percentageIncrease > 0 ? '+' : ''}{numberWithCommasAndRounded(percentageIncrease, 2)}%</p>
+            </div>
         </div>
     )
 };

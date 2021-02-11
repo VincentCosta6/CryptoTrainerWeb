@@ -72,12 +72,13 @@ export const OpenTrades = (props: Props) => {
                 }}
                 aria-labelledby="simple-modal-title"
                 aria-describedby="simple-modal-description"
+                style={{ color: '#8a939e' }}
             >
-                <DialogTitle id="simple-dialog-title">Leveraged Trade View</DialogTitle>
-                <DialogContent>
+                <DialogTitle id="simple-dialog-title" style={{ backgroundColor: '#262d34', color: '#8a939e' }}>Leveraged Trade View</DialogTitle>
+                <DialogContent style={{ backgroundColor: '#262d34' }}>
                     <OpenTradeView trade={tradeChosen} />
                 </DialogContent>
-                <DialogActions>
+                <DialogActions style={{ backgroundColor: '#262d34' }}>
                     <Button onClick={() => {
                         if (!executionLoading) 
                             setTradeChosen(null)

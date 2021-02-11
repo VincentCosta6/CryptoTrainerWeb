@@ -39,7 +39,7 @@ const init = (reconnectAttempt: boolean) => {
     }
 
     if (data.type === 'liquidationNotice') {
-      dispatch(removeLeveragedTrade(data.leveragedType))
+      dispatch(removeLeveragedTrade(data.leveragedTrade))
       alert('You have been liquidated')
     } 
 

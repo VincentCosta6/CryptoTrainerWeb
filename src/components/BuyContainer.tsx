@@ -24,7 +24,6 @@ const leverageMap = {
     8: 250,
     9: 500,
     10: 1000,
-    11: 10000
 }
 
 export const BuyContainer = (props: Props) => {
@@ -137,7 +136,6 @@ export const BuyContainer = (props: Props) => {
                                     { value: 8, label: '250x' },
                                     { value: 9, label: '500x' },
                                     { value: 10, label: '1000x' },
-                                    { value: 11, label: '10000x' },
                                 ]}
                                 onChange={(event, newVal: any) => setLeverage(newVal)}
                                 valueLabelDisplay="auto"

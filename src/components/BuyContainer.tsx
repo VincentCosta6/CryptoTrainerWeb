@@ -135,8 +135,7 @@ export const BuyContainer = (props: Props) => {
                                     { value: 7, label: '100x' },
                                     { value: 8, label: '250x' },
                                     { value: 9, label: '500x' },
-                                    { value: 10, label: '1000x' },
-                                    { value: 11, label: '1Mx' },
+                                    { value: 10, label: '1Mx' },
                                 ]}
                                 onChange={(event, newVal: any) => setLeverage(newVal)}
                                 valueLabelDisplay="auto"

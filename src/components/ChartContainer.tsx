@@ -5,15 +5,43 @@ import { connect, ConnectedProps } from 'react-redux'
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import ReactEcharts from 'echarts-for-react';
-import { fetchCoinPrice, setTimeInterval, timeIntervalsList } from '../redux/reducers/price';
+import { fetchCoinPrice, setLastPrice, setTimeInterval, timeIntervalsList } from '../redux/reducers/price';
 import { generateChart } from './chartOptions';
 import { clearTrades } from '../redux/reducers/marketTrades';
-import { getPriceWithProperZeroes, tickerMap } from './BalanceContainer';
+import { getPriceWithProperZeroes, nameMap, tickerMap } from './BalanceContainer';
+import { CoinIcon } from './DrawerComponent';
+
+import './ChartContainer.scss'
+
+export interface ZoomInfo {
+    start: number,
+    end: number,
+}
 
 export const ChartContainer = (props: Props) => {
     const dispatch = useAppDispatch()
 
     const [chartData, setChartData] = useState<any>()
+    // before the last price
+    const [previousPrice, setPreviousPrice] = useState<number>(0)
+    const [color, setColor] = useState<'green' | 'red'>('green')
+    const [zoomData, setZoomData] = useState<ZoomInfo>({ start: 50, end: 100 })
+
+    const [events] = useState({
+        'dataZoom': (event: any) => {
+            setZoomData(event.batch[0])
+        }
+    })
+
+    useEffect(() => {
+        if (Number(props.lastPrice) > previousPrice) {
+            setColor('green')
+        } else if (Number(props.lastPrice) < previousPrice) {
+            setColor('red')
+        }
+
+        setPreviousPrice(props.lastPrice)
+    }, [props.lastPrice])
 
     useEffect(() => {
         dispatch(fetchCoinPrice({
@@ -22,6 +50,7 @@ export const ChartContainer = (props: Props) => {
             interval: props.selectedInterval,
             coins: props.coins,
         }))
+        // @ts-ignore
     }, [props.selectedInterval, props.selectedCrypto])
 
     useEffect(() => {
@@ -37,7 +66,7 @@ export const ChartContainer = (props: Props) => {
                 return [index, candle.z[0], candleOpen < candleClosed ? 1 : -1]
             })
 
-            const options = generateChart(intervals, seriesData, volumes)
+            const options = generateChart(tickerMap[props.selectedCrypto], intervals, seriesData, volumes, zoomData)
             setChartData(options)
         }
     }, [props.prices])
@@ -47,17 +76,22 @@ export const ChartContainer = (props: Props) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <h2 style={{ marginBottom: 0, color: '#8a939f',  }}>{tickerMap[props.selectedCrypto]}: ${tickerPrice}</h2>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ marginLeft: 15, marginRight: 15, marginTop: 8 }}>
+                        { /* @ts-ignore */ }
+                        <CoinIcon name={props.selectedCrypto} />
+                    </div>
+                    <h2 style={{ color: '#8a939f', margin: 0 }}>{tickerMap[props.selectedCrypto]}: $ </h2>
+                    <h2 style={{ margin: 0, color }}> {tickerPrice}</h2>
+                </div>
                 <div>
                     <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
                         value={props.selectedInterval}
                         onChange={(event: any) => {
                             dispatch(setTimeInterval(event.target.value))
                             dispatch(clearTrades(props.selectedCrypto))
                         }}
-                        style={{ color: '#8a939f', borderColor: '#8a939f' }}
+                        style={{ color: '#8a939f', borderColor: '#8a939f', height: '100%' }}
                     >
                         { timeIntervalsList.map(interval => <MenuItem key = {interval.value} value={interval.value}>{interval.name}</MenuItem>) }
                     </Select>
@@ -69,6 +103,8 @@ export const ChartContainer = (props: Props) => {
                         option={chartData}
                         notMerge={false}
                         lazyUpdate={true}
+                        onEvents={events}
+                        style={{ top: -40 }}
                     />
                 )
             }

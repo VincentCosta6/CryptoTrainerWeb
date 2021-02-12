@@ -1,7 +1,9 @@
+import { ZoomInfo } from "./ChartContainer";
+
 export const upColor = '#47b262'
 export const downColor = '#eb5454'
 
-export const generateChart = (intervals: any, seriesData: any, volumes: any) => {
+export const generateChart = (name: string, intervals: any, seriesData: any, volumes: any, zoomData: ZoomInfo) => {
     return {
         grid: [
             {
@@ -16,24 +18,24 @@ export const generateChart = (intervals: any, seriesData: any, volumes: any) => 
                 height: '25%'
             }
         ],
-        /*dataZoom: [
+        dataZoom: [
             {
                 type: 'inside',
-                start: 50,
-                end: 100
+                start: zoomData.start,
+                end: zoomData.end
             },
             {
                 show: true,
                 type: 'slider',
                 top: '90%',
-                start: 50,
-                end: 100
+                start: zoomData.start,
+                end: zoomData.end
             }
-        ],*/
+        ],
         legend: {
+            data: [name],
             bottom: 10,
             left: 'center',
-            data: ['Dow-Jones index']
         },
         axisPointer: {
             link: {xAxisIndex: 'all'},
@@ -125,7 +127,7 @@ export const generateChart = (intervals: any, seriesData: any, volumes: any) => 
         ],
         series: [
             {
-                name: 'Dow-Jones index',
+                name,
                 type: 'candlestick',
                 data: seriesData,
                 itemStyle: {

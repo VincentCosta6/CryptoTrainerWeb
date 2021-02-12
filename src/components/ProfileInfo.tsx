@@ -10,7 +10,7 @@ const ProfileInfo = (props: Props) => {
     } else if (props.user.loading === 'pending') {
         return <p>Loading...</p>
     } else if (props.user.loading === 'success') {
-        return <p>{props.user.username}</p>
+        return <p style={{ marginRight: 20 }}>{props.user.username}</p>
     } else {
         return <p>Error</p>
     }

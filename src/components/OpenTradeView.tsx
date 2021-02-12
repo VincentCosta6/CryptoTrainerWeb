@@ -24,16 +24,22 @@ export const OpenTradeView = ({ trade, lastPrice }: Props) => {
     return (
         <div style={{ color: '#8a939e' }}>
             <div style={{ display: 'flex', marginBottom: 0 }}>
-                <p>Trade Type: </p>
-                <p style={{ color: trade.type === 'BUY' ? 'green' : 'red' }}> {trade.type}</p>
+                <div style={{ display: 'flex', marginBottom: 0 }}>  
+                    <p>Type: </p>
+                    <p style={{ color: trade.type === 'BUY' ? 'green' : 'red', marginLeft: 5 }}> {trade.type} {trade.leverageTimes}x</p>
+                </div>
+                <div style={{ display: 'flex', marginBottom: 0, marginLeft: 15 }}>  
+                    <p>Price: ${getPriceWithProperZeroes(Number(trade.executedPrice))}</p>
+                </div>
             </div>
-            <p>Price: ${getPriceWithProperZeroes(Number(trade.executedPrice))}</p>
-            <p>Starting: ${numberWithCommasAndRounded(Number(trade.initialMargin), 2)} * {trade.leverageTimes}x</p>
-            <p>Total starting power: ${numberWithCommasAndRounded(Number(trade.leveragedBuyingPower), 2)}</p>
-            <p>Total power: ${getPriceWithProperZeroes(currentValue)}</p>
+            <p>Margin: ${numberWithCommasAndRounded(Number(trade.initialMargin), 2)} </p>
+            <p>Starting power: ${numberWithCommasAndRounded(Number(trade.leveragedBuyingPower), 2)}</p>
+            <p>Current power: ${numberWithCommasAndRounded(currentValue, 2)}</p>
 
             <div style={{ display: 'flex' }}>
-                <p>Change: ${numberWithCommasAndRounded(leveragedChange, 2)} (</p>
+                <p>Change: $ </p>
+                <p style={{ color: percentageIncrease < 0 ? 'red' : 'green', marginRight: 5 }}>{leveragedChange > 0 ? '+' : ''}{numberWithCommasAndRounded(leveragedChange, 2)}</p>
+                <p>(</p>
                 <p style={{ color: percentageIncrease < 0 ? 'red' : 'green' }}>{percentageIncrease > 0 ? '+' : ''}{numberWithCommasAndRounded(percentageIncrease, 2)}%</p>
                 <p>)</p>
             </div>

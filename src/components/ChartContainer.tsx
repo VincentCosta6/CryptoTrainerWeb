@@ -90,7 +90,7 @@ export const ChartContainer = (props: Props) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <div style={{ marginLeft: 15, marginRight: 15, marginTop: 8 }}>
                         { /* @ts-ignore */ }
@@ -99,14 +99,14 @@ export const ChartContainer = (props: Props) => {
                     <h2 style={{ color: '#8a939f', margin: 0 }}>{tickerMap[props.selectedCrypto]}: $ </h2>
                     <h2 style={{ margin: 0, color }}> {tickerPrice}</h2>
                 </div>
-                <div>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Select
                         value={props.selectedInterval}
                         onChange={(event: any) => {
                             dispatch(setTimeInterval(event.target.value))
                             dispatch(clearTrades(props.selectedCrypto))
                         }}
-                        style={{ color: '#8a939f', borderColor: '#8a939f', height: '100%' }}
+                        style={{ color: '#8a939f', borderColor: '#8a939f' }}
                     >
                         { timeIntervalsList.map(interval => <MenuItem key = {interval.value} value={interval.value}>{interval.name}</MenuItem>) }
                     </Select>

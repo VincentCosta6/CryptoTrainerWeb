@@ -7,13 +7,13 @@ export const generateChart = (name: string, intervals: any, seriesData: any, vol
     return {
         grid: [
             {
-                left: '8%',
-                right: '3%',
+                left: '60px',
+                right: '30px',
                 height: '50%'
             },
             {
-                left: '5%',
-                right: '1%',
+                left: '60px',
+                right: '30px',
                 top: '65%',
                 height: '25%'
             }
@@ -21,11 +21,13 @@ export const generateChart = (name: string, intervals: any, seriesData: any, vol
         dataZoom: [
             {
                 type: 'inside',
+                xAxisIndex: [0, 1],
                 start: zoomData.start,
                 end: zoomData.end
             },
             {
                 show: true,
+                xAxisIndex: [0, 1],
                 type: 'slider',
                 top: '90%',
                 start: zoomData.start,

@@ -7,8 +7,8 @@ export const generateChart = (name: string, intervals: any, seriesData: any, vol
     return {
         grid: [
             {
-                left: '5%',
-                right: '1%',
+                left: '8%',
+                right: '3%',
                 height: '50%'
             },
             {

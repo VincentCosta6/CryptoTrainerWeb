@@ -2,20 +2,31 @@ import React, { useState, useEffect } from 'react'
 
 import { RootState, useAppDispatch } from '../redux/store'
 import { connect, ConnectedProps } from 'react-redux'
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import ReactEcharts from 'echarts-for-react';
-import { fetchCoinPrice, setLastPrice, setTimeInterval, timeIntervalsList } from '../redux/reducers/price';
-import { generateChart } from './chartOptions';
-import { clearTrades } from '../redux/reducers/marketTrades';
-import { getPriceWithProperZeroes, nameMap, tickerMap } from './BalanceContainer';
-import { CoinIcon } from './DrawerComponent';
+import Select from '@material-ui/core/Select'
+import MenuItem from '@material-ui/core/MenuItem'
+import ReactEcharts from 'echarts-for-react'
+import { fetchCoinPrice, setLastPrice, setTimeInterval, timeIntervalsList } from '../redux/reducers/price'
+import { generateChart } from './chartOptions'
+import { clearTrades } from '../redux/reducers/marketTrades'
+import { getPriceWithProperZeroes, nameMap, tickerMap } from './BalanceContainer'
+import { CoinIcon } from './DrawerComponent'
+
+import moment from 'moment'
 
 import './ChartContainer.scss'
 
 export interface ZoomInfo {
     start: number,
     end: number,
+}
+
+const formatMap = {
+    '60': (candle: number) =>  moment(candle).format('h:mm A'),
+    '300': (candle: number) =>  moment(candle).format('h:mm A'),
+    '900': (candle: number) =>  moment(candle).format('dd h:mm A'),
+    '3600': (candle: number) =>  moment(candle).format('dd h:mm A'),
+    '14400': (candle: number) =>  moment(candle).format('MM/DD h:mm A'),
+    '86400': (candle: number) =>  moment(candle).format('MM/DD h:mm A'),
 }
 
 export const ChartContainer = (props: Props) => {
@@ -29,7 +40,10 @@ export const ChartContainer = (props: Props) => {
 
     const [events] = useState({
         'dataZoom': (event: any) => {
-            setZoomData(event.batch[0])
+            if (event.batch)
+                setZoomData(event.batch[0])
+            else 
+                setZoomData(event)
         }
     })
 
@@ -55,7 +69,8 @@ export const ChartContainer = (props: Props) => {
 
     useEffect(() => {
         if (props.prices && props.prices[props.selectedCrypto] && props.prices[props.selectedCrypto][props.selectedInterval]) {
-            const intervals = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => candle.x)
+            // @ts-ignore
+            const intervals = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => formatMap[props.selectedInterval](candle.x))
             // O: 0, H: 1, L: 2, C: 3
             // O C L H
             const seriesData = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => [candle.y[0], candle.y[3], candle.y[2], candle.y[1]])
@@ -97,17 +112,16 @@ export const ChartContainer = (props: Props) => {
                     </Select>
                 </div>
             </div>
-            {
-                props.candlesLoading === 'success' && chartData && (
-                    <ReactEcharts
-                        option={chartData}
-                        notMerge={false}
-                        lazyUpdate={true}
-                        onEvents={events}
-                        style={{ top: -40 }}
-                    />
-                )
-            }
+                {
+                    props.candlesLoading === 'success' && chartData && (
+                        <ReactEcharts
+                            option={chartData}
+                            notMerge={false}
+                            lazyUpdate={true}
+                            onEvents={events}
+                        />
+                    )
+                }
         </div>
     )
 };

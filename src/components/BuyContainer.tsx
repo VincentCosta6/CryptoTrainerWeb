@@ -145,20 +145,55 @@ export const BuyContainer = (props: Props) => {
                     </div>
                 )
             }
-            <p style={{ color: '#8a939f' }}>Amount</p>
+            <div style = {{ display: 'flex', alignItems: 'center' }}>
+                <p style={{ color: '#8a939f', marginRight: 10 }}>Amount</p>
+                <Button
+                    style={{ height: 25, color: '#8a939f', marginLeft: 5, border: '2px dashed #263543', flexGrow: 1 }}
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                        setBuyField((props.dollarBalance / 4 || 0) + "")
+                        setMaxBuy(false)
+                    }}
+                >
+                    25%
+                </Button>
+                <Button
+                    style={{ height: 25, color: '#8a939f', marginLeft: 5, border: '2px dashed #263543', flexGrow: 1 }}
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                        setBuyField((props.dollarBalance / 2 || 0) + "")
+                        setMaxBuy(false)
+                    }}
+                >
+                    50%
+                </Button>
+                <Button
+                    style={{ height: 25, color: '#8a939f', marginLeft: 5, border: '2px dashed #263543', flexGrow: 1 }}
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                        setBuyField((props.dollarBalance / 4 * 3 || 0) + "")
+                        setMaxBuy(false)
+                    }}
+                >
+                    75%
+                </Button>
+                <Button
+                    style={{ height: 25, color: '#8a939f', marginLeft: 5, border: '2px dashed #263543', flexGrow: 1 }}
+                    variant="text"
+                    size="small"
+                    onClick={() => {
+                        setBuyField((props.dollarBalance || 0) + "")
+                        setMaxBuy(true)
+                    }}
+                >
+                    100%
+                </Button>
+            </div>
             <div style={{ display: 'flex', maxHeight: 50 }}>
                 <Paper component="form" style={{ backgroundColor: "#263543", maxHeight: 50, height: 50, display: 'flex', width: '100%' }} variant="outlined">
-                    <Button
-                        style={{ backgroundColor: '#263543', height: 50, color: '#8a939f' }}
-                        variant="text"
-                        size="small"
-                        onClick={() => {
-                            setBuyField((props.dollarBalance || 0) + "")
-                            setMaxBuy(true)
-                        }}
-                    >
-                        Max
-                        </Button>
                     <InputBase
                         placeholder="0.00"
                         inputProps={{ 'aria-label': 'search google maps' }}

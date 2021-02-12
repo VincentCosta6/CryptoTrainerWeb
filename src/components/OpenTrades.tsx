@@ -18,6 +18,7 @@ import { upColor } from './chartOptions';
 import { setDollars } from '../redux/reducers/user';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { removeLiquidations } from '../redux/reducers/liquidations';
+import Divider from '@material-ui/core/Divider';
 
 export const OpenTrades = (props: Props) => {
     const dispatch = useAppDispatch()
@@ -58,11 +59,14 @@ export const OpenTrades = (props: Props) => {
                 {
                     // @ts-ignore
                     props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto).map((trade: LeveragedTradeType) => (
-                        <ListItem button key={trade._id} onClick={() => {
-                            setTradeChosen(trade)
-                        }}>
-                            <LeveragedTrade trade={trade} price={props.lastPrice} />
-                        </ListItem>
+                        <>
+                            <ListItem button key={trade._id} onClick={() => {
+                                setTradeChosen(trade)
+                            }}>
+                                <LeveragedTrade trade={trade} price={props.lastPrice} />
+                            </ListItem>
+                            <Divider style = {{ backgroundColor: '#808792' }} />
+                        </>
                     ))
                 }
             </List>

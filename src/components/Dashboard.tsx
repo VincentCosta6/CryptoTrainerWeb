@@ -34,7 +34,7 @@ const Dashboard = (props: Props) => {
     }
 
     return (
-        <div style={{ height: '90vh' }}>
+        <div style={{ height: '92vh' }}>
             <LiquidationNotice  dispatch={dispatch} liquidations={props.liquidations} lastPrice={props.lastPrice}  />
             <div style={{ display: 'flex', height: '100%' }}>
                 <div style={{ color: '#8a939f', borderRight: '1px solid #262d34', padding: 10, maxWidth: 350, minWidth: 350 }}>

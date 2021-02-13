@@ -28,12 +28,16 @@ import Paper from '@material-ui/core/Paper';
 import TableBody from '@material-ui/core/TableBody';
 
 import './OpenTrades.scss'
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 
 export const OpenTrades = (props: Props) => {
     const dispatch = useAppDispatch()
 
+    const [page, setPage] = useState(0)
     const [tradeChosen, setTradeChosen] = useState<LeveragedTradeType | null>(null)
     const [executionLoading, setExecutionLoading] = useState(false)
+    const [leveragedTrades, setLeveragedTrades] = useState<any>(props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto))
 
     const handleExecution = () => {
         setExecutionLoading(true)
@@ -62,25 +66,58 @@ export const OpenTrades = (props: Props) => {
             })
     }
 
+    const length = props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto).length
+
+    useEffect(() => {
+        setLeveragedTrades(props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto))
+    }, [props.leveragedTrades])
+
+    useEffect(() => {
+        if (page * 11 >= leveragedTrades.length) {
+            const lastIndex = Math.floor(leveragedTrades.length / 11)
+            setPage(lastIndex)
+        }
+    }, [leveragedTrades.length])
+
     return (
         <div>
-            <TableContainer component={Paper}>
-                <Table aria-label="simple table">
-                    <TableHead>
-                        <TableRow style={{ cursor: 'pointer', color: '#8a939f !important' }}>
-                            <TableCell>Type</TableCell>
-                            <TableCell align="right">Margin</TableCell>
-                            <TableCell align="right">$</TableCell>
-                            <TableCell align="right">%</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                    {props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto).map((trade: LeveragedTradeType) => (
-                        <LeveragedTrade trade={trade} price={props.lastPrice} onClick={() => setTradeChosen(trade)} />
-                    ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            <Paper>
+                <TableContainer style={{ height: '100%' }}>
+                    <Table aria-label="simple table">
+                        <TableHead>
+                            <TableRow style={{ cursor: 'pointer', color: '#8a939f !important' }}>
+                                <TableCell>Type</TableCell>
+                                <TableCell align="right">Margin</TableCell>
+                                <TableCell align="right">$</TableCell>
+                                <TableCell align="right">%</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto).slice(page * 11, page * 11 + 11).map((trade: LeveragedTradeType) => (
+                            <LeveragedTrade trade={trade} price={props.lastPrice} onClick={() => setTradeChosen(trade)} />
+                        ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                {
+                    length > 11 && (
+                        <TablePagination
+                            rowsPerPageOptions={[5]}
+                            component="div"
+                            colSpan={3}
+                            count={length}
+                            rowsPerPage={11}
+                            page={page}
+                            SelectProps={{
+                                inputProps: { 'aria-label': 'rows per page' },
+                                native: true,
+                            }}
+                            onChangePage={(event, newPage) => setPage(newPage)}
+                            style={{  }}
+                        />
+                    )
+                }
+            </Paper>
             <Dialog
                 open={Boolean(tradeChosen)}
                 onClose={() => {

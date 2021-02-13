@@ -30,6 +30,7 @@ import TableBody from '@material-ui/core/TableBody';
 import './OpenTrades.scss'
 import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
+import { addTrade } from '../redux/reducers/trades';
 
 export const OpenTrades = (props: Props) => {
     const dispatch = useAppDispatch()
@@ -57,6 +58,7 @@ export const OpenTrades = (props: Props) => {
                 setExecutionLoading(false)
                 // @ts-ignore
                 dispatch(removeLeveragedTrade(tradeChosen))
+                dispatch(addTrade(updateInfo.newTrade))
                 dispatch(setDollars(updateInfo.newDollars))
                 setTradeChosen(null)
             })

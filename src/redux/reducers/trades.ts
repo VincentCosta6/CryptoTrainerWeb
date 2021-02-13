@@ -1,12 +1,14 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import { Coin } from './coins';
+import { LeveragedTradeType } from './leveragedTrade';
 
-interface Trade {
+export interface Trade {
     ticker: string
-    type: 'buy' | 'sell',
+    type: 'buy' | 'sell' | 'CLOSE',
     quantity: number,
     requestedPrice: number,
-    executedPrice: number
+    executedPrice: number,
+    leveragedTrade: LeveragedTradeType | null,
 }
 
 interface TradeState {

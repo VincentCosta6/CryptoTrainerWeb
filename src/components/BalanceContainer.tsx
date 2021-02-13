@@ -55,8 +55,8 @@ export const BalanceContainer = (props: Props) => {
 
     return (
         <div style={{ borderBottom: '1px solid #262d34', marginBottom: 5, marginTop: 0 }}>
-            <h1 style={{ marginTop: 0 }}>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</h1>
-            <h1>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] || 0), 6)}</h1>
+            <h1 style={{ marginTop: 0, fontSize: '1.6rem' }}>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</h1>
+            <h1 style={{ fontSize: '1.6rem' }}>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] || 0), 6)}</h1>
         </div>
     )
 };

@@ -40,7 +40,7 @@ export const History = (props: Props) => {
     const [page, setPage] = useState(0)
     const [tradeChosen, setTradeChosen] = useState<Trade | null>(null)
 
-    const currentTrades = props.trades[props.selectedCrypto]
+    const currentTrades = props.trades[props.selectedCrypto].slice().reverse()
     const length = currentTrades.length
 
     return (

@@ -19,6 +19,15 @@ import { setDollars } from '../redux/reducers/user';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import { removeLiquidations } from '../redux/reducers/liquidations';
 import Divider from '@material-ui/core/Divider';
+import TableContainer from '@material-ui/core/TableContainer';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import TableBody from '@material-ui/core/TableBody';
+
+import './OpenTrades.scss'
 
 export const OpenTrades = (props: Props) => {
     const dispatch = useAppDispatch()
@@ -55,21 +64,23 @@ export const OpenTrades = (props: Props) => {
 
     return (
         <div>
-            <List component="nav" aria-label="main mailbox folders">
-                {
-                    // @ts-ignore
-                    props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto).map((trade: LeveragedTradeType) => (
-                        <>
-                            <ListItem button key={trade._id} onClick={() => {
-                                setTradeChosen(trade)
-                            }}>
-                                <LeveragedTrade trade={trade} price={props.lastPrice} />
-                            </ListItem>
-                            <Divider style = {{ backgroundColor: '#808792' }} />
-                        </>
-                    ))
-                }
-            </List>
+            <TableContainer component={Paper}>
+                <Table aria-label="simple table">
+                    <TableHead>
+                        <TableRow style={{ cursor: 'pointer', color: '#8a939f !important' }}>
+                            <TableCell>Type</TableCell>
+                            <TableCell align="right">Margin</TableCell>
+                            <TableCell align="right">$</TableCell>
+                            <TableCell align="right">%</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                    {props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto).map((trade: LeveragedTradeType) => (
+                        <LeveragedTrade trade={trade} price={props.lastPrice} onClick={() => setTradeChosen(trade)} />
+                    ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
             <Dialog
                 open={Boolean(tradeChosen)}
                 onClose={() => {

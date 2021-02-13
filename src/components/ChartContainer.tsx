@@ -96,8 +96,8 @@ export const ChartContainer = (props: Props) => {
                         { /* @ts-ignore */ }
                         <CoinIcon name={props.selectedCrypto} />
                     </div>
-                    <h2 style={{ color: '#8a939f', margin: 0 }}>{tickerMap[props.selectedCrypto]}: $ </h2>
-                    <h2 style={{ margin: 0, color }}> {tickerPrice}</h2>
+                    <h1 style={{ color: '#8a939f', margin: 0, fontSize: '2.4rem' }}>{tickerMap[props.selectedCrypto]}: $ </h1>
+                    <h1 style={{ margin: 0, color, fontSize: '2.4rem' }}> {tickerPrice}</h1>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Select

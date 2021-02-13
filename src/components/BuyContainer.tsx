@@ -236,7 +236,7 @@ export const BuyContainer = (props: Props) => {
                         )
                     }
                     <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: {numberWithCommasAndRounded(newCoinBalance, 6)}</p>
+                    {  !useLeverage && <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: {numberWithCommasAndRounded(newCoinBalance, 6)}</p> }
                     <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: ${numberWithCommasAndRounded(remainingBalance, 2)}</p>
                 </div>
             </div>

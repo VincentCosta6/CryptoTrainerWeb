@@ -27,11 +27,11 @@ export const coinIconMap = {
 
 export const CoinIcon = ({ name }: { name: string }) => {
     if (name === 'btcusd') {
-        return <Icon icon={bitcoinIcon} width="2em" height="2em" />
+        return <Icon icon={bitcoinIcon} width="2.6em" height="2.6em" />
     } else if (name === 'ethusd') {
-        return <Icon icon={ethereumIcon} width="2em" height="2em" />
+        return <Icon icon={ethereumIcon} width="2.6em" height="2.6em" />
     } else {
-        return <Icon icon={dogeIcon} color="#c3a636" width="2em" height="2em" />
+        return <Icon icon={dogeIcon} color="#c3a636" width="2.6em" height="2.6em" />
     }
 }
 // npm install --save-dev @iconify/react @iconify-icons/logos

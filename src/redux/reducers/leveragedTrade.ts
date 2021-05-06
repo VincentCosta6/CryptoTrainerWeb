@@ -12,6 +12,7 @@ export interface LeveragedTradeType {
     quantity: number,
     requestedPrice: number,
     executedPrice: number,
+    salePrice: number,
     __v: number,
 }
 

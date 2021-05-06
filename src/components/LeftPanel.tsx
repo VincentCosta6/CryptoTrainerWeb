@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import BalanceContainer from './BalanceContainer'
 import TradingActionContainer from './TradingActionContainer'
 import OpenTrades from './OpenTrades'
+import History from './History'
 
 import { RootState } from '../redux/store'
 import { connect, ConnectedProps } from 'react-redux'
@@ -67,6 +68,9 @@ export const ChartContainer = (props: Props) => {
             }
             {
                 activeTab === "2" && <OpenTrades />
+            }
+            {
+                activeTab === "3" && <History />
             }
         </>
     )

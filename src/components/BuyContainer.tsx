@@ -145,7 +145,7 @@ export const BuyContainer = (props: Props) => {
                     </div>
                 )
             }
-            <div style = {{ display: 'flex', alignItems: 'center' }}>
+            <div style = {{ display: 'flex', alignItems: 'center', marginTop: 15 }}>
                 <p style={{ color: '#8a939f', marginRight: 10 }}>Amount</p>
                 <Button
                     style={{ height: 25, color: '#8a939f', marginLeft: 5, border: '2px dashed #263543', flexGrow: 1 }}
@@ -228,7 +228,7 @@ export const BuyContainer = (props: Props) => {
                     </Button>
                 </Paper>
             </div>
-            <div style={{ marginTop: 10 }}>
+            <div style={{ marginTop: 25 }}>
                 <div style={{ marginLeft: 7 }}>
                     {
                         useLeverage && (

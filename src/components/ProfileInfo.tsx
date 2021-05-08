@@ -35,7 +35,7 @@ const ProfileInfo = (props: Props) => {
         return (
             <div style={{ display: 'flex', alignItems: 'center', marginRight: 20 }}>
                 <Button aria-controls="simple-menu2" aria-haspopup="true" onClick={handleClick} style = {{ color: '#8a939f' }} endIcon={<Person />}>
-                    Profile
+                    { props.user.username }
                 </Button>
                 <Menu
                     id="simple-menu2"

@@ -162,7 +162,7 @@ export default () => {
             >
                 <DialogTitle style={{ backgroundColor: '#262d34', color: '#8a939e' }}>Create Account</DialogTitle>
                 <DialogContent style={{ backgroundColor: '#262d34' }}>
-                    <DialogContentText style={{ color: 'white' }}>Tip: bookmarking the page after logging in your account so you can come back later</DialogContentText>
+                    <DialogContentText style={{ color: 'white' }}>Tip: bookmark the page after logging into your account so you can come back later</DialogContentText>
                     <TextField label="Username" value={username} onChange={handleUsernameChange} />
                 </DialogContent>
                 <DialogActions style={{ backgroundColor: '#262d34' }}>

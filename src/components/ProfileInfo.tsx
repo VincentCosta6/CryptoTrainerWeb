@@ -1,26 +1,30 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 import { RootState } from '../redux/store'
+import Person from '@material-ui/icons/Person'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Person from '@material-ui/icons/Person';
+import { useHistory } from 'react-router-dom'
 
-import Select from '@material-ui/core/Select';
-
-import { connect, ConnectedProps, useStore } from 'react-redux'
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import { connect, ConnectedProps } from 'react-redux'
+import Button from '@material-ui/core/Button'
+import MenuItem from '@material-ui/core/MenuItem'
+import Menu from '@material-ui/core/Menu'
 
 const ProfileInfo = (props: Props) => {
+    const history = useHistory()
+
     const [anchorEl, setAnchorEl] = useState(null)
 
     const handleClick = (event: any) => {
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(event.currentTarget)
     }
 
     const handleClose = () => {
         setAnchorEl(null);
+    }
+
+    const handleLogout = () => {
+        history.push('/user')
     }
 
     if (props.user.loading === 'idle') {
@@ -41,7 +45,6 @@ const ProfileInfo = (props: Props) => {
                     onClose={handleClose}
                 >
                     <MenuItem onClick={handleClose}>Generate QR code</MenuItem>
-                    <MenuItem onClick={handleClose}>Logout</MenuItem>
                 </Menu>
             </div>
         )

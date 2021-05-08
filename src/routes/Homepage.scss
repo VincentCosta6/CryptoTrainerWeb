@@ -1,0 +1,33 @@
+.homepage-body {
+    flex-grow: 1;
+
+    .login-container {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 15px;
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            padding: 50px;
+            background-color: #060d13;
+            border-radius: 15px;
+        }
+    }
+}
+
+.MuiInputBase-input.MuiInput-input {
+    color: white !important;
+    padding-left: 15px !important;
+}
+
+.MuiFormLabel-root.MuiInputLabel-root.MuiInputLabel-formControl.MuiInputLabel-animated {
+    color: white
+}
+
+.MuiInputBase-input .MuiInput-input::placeholder {
+    color: white
+}

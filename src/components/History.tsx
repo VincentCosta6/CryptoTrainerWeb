@@ -58,7 +58,7 @@ export const History = (props: Props) => {
                         </TableHead>
                         <TableBody>
                         {currentTrades.slice(page * 11, page * 11 + 11).map((trade: Trade) => (
-                            <TradeComp trade={trade} onClick={() => setTradeChosen(trade)} />
+                            <TradeComp trade={trade} onClick={() => setTradeChosen(trade)} price={props.lastPrice} />
                         ))}
                         </TableBody>
                     </Table>
@@ -94,7 +94,7 @@ function calculateNumeral(num: number) {
     return n
 }
 
-export const TradeComp = ({ trade, onClick }: { trade: Trade, onClick: Function }) => {
+export const TradeComp = ({ trade, onClick, price }: { trade: Trade, onClick: Function, price: Number }) => {
     const isLeveraged = Boolean(trade.leveragedTrade)
     const leveragedTrade = isLeveraged ? trade.leveragedTrade : null
 
@@ -109,6 +109,11 @@ export const TradeComp = ({ trade, onClick }: { trade: Trade, onClick: Function 
         leveragedChange = (leveragedTrade.salePrice * leveragedTrade?.quantity) - leveragedTrade.leveragedBuyingPower
         // @ts-ignore
         percentageIncrease = leveragedChange / Number(leveragedTrade.initialMargin) * 100
+    } else {
+        // @ts-ignore
+        leveragedChange = (trade.executedPrice * trade.quantity) - (price * trade.quantity)
+        // @ts-ignore
+        percentageIncrease = leveragedChange / Number(trade.executedPrice * trade.quantity) * 100
     }
 
     return (
@@ -118,7 +123,12 @@ export const TradeComp = ({ trade, onClick }: { trade: Trade, onClick: Function 
             </TableCell>
             <TableCell align="right" onClick={() => onClick(trade)} style={{ color: '#8a939f' }}>${calculateNumeral(Number(initialInvestment))}</TableCell>
             {
-                isLeveraged && (
+                isLeveraged ? (
+                    <>
+                        <TableCell align="right" style={{ color: leveragedChange < 0 ? 'red' : 'green', width: '25%' }} onClick={() => onClick(trade)}>{leveragedChange > 0 ? '+' : ''}{calculateNumeral(leveragedChange)}</TableCell>
+                        <TableCell align="right" style={{ color: percentageIncrease < 0 ? 'red' : 'green', width: '25%' }} onClick={() => onClick(trade)}>{percentageIncrease > 0 ? '+' : ''}{numberWithCommasAndRounded(percentageIncrease, 2)}%</TableCell>
+                    </>
+                ) : (
                     <>
                         <TableCell align="right" style={{ color: leveragedChange < 0 ? 'red' : 'green', width: '25%' }} onClick={() => onClick(trade)}>{leveragedChange > 0 ? '+' : ''}{calculateNumeral(leveragedChange)}</TableCell>
                         <TableCell align="right" style={{ color: percentageIncrease < 0 ? 'red' : 'green', width: '25%' }} onClick={() => onClick(trade)}>{percentageIncrease > 0 ? '+' : ''}{numberWithCommasAndRounded(percentageIncrease, 2)}%</TableCell>

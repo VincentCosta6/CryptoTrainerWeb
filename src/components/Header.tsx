@@ -69,7 +69,7 @@ export const Header = (props: Props) => {
                     <span className="styled-icon" style = {{ backgroundColor: websocketColor }}></span>
                     <p>{websocketText}</p>
                 </div>
-                <h2 className="title">Minecraft Markets</h2>
+                <h2 className="title">Crypto Trainer</h2>
                 <ProfileInfo />
             </header>
         </>

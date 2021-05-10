@@ -146,8 +146,8 @@ export default () => {
 
                     <span className={classes.signup}>
                         Dont have a UUID?
-                        <Button variant="contained" color="primary" onClick={handleGenerateAccount} className={classes.generate}>
-                            Generate
+                        <Button color="primary" onClick={handleGenerateAccount} className={classes.generate}>
+                            Generate UUID
                         </Button>
                     </span>
                     <p className={classes.tip}>Tip: After logging in / generating an account make sure you bookmark the page</p>

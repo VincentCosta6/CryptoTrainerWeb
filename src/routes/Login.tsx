@@ -13,55 +13,12 @@ import {
     DialogContent,
     DialogContentText,
     DialogActions,
-} from '@material-ui/core'
-
-import {
-    makeStyles, 
-    createStyles, 
-} from '@material-ui/core'
+} from '@mui/material'
 
 import './Homepage.scss'
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        input: {
-            flex: 1,
-            backgroundColor: '#121d27',
-            marginBottom: 25,
-            marginLeft: 0,
-            color: 'white'
-        },
-        iconButton: {
-            padding: 10,
-        },
-        divider: {
-            height: 28,
-            margin: 4,
-        },
-        tip: {
-            color: 'white',
-            margin: 0
-        },
-        title: {
-            color: 'white',
-            marginBottom: 50
-        },
-        signup: {
-            color: 'white',
-            margin: '20px 0px'
-        },
-        generate: {
-            marginLeft: '10px'
-        },
-        error: {
-            color: 'red'
-        }
-    }),
-);
-
 export default () => {
     const navigate = useNavigate()
-    const classes = useStyles();
 
     const [UUID, setUUID] = useState<string>('')
     const [loading, setLoading] = useState(false)
@@ -133,8 +90,8 @@ export default () => {
         <div className="homepage-body">
             <div className="login-container">
                 <div className="form-container">
-                    <h2 className={classes.title}>Login</h2>
-                    <TextField className={classes.input} label = "UUID" value = {UUID} onChange={handleUUIDChange} inputProps={{ style: { paddingLeft: '8px' } }} />
+                    <h2>Login</h2>
+                    <TextField label = "UUID" value = {UUID} onChange={handleUUIDChange} inputProps={{ style: { paddingLeft: '8px' } }} />
 
                     <Button variant="contained"  color="primary" onClick={handleLogin} disabled={loading}>
                         Login
@@ -142,11 +99,11 @@ export default () => {
 
                     { loading && <LinearProgress /> }
 
-                    { error && <p className={classes.error}>{error}</p> }
+                    { error && <p>{error}</p> }
 
-                    <span className={classes.signup}>
+                    <span>
                         Dont have a UUID?
-                        <Button color="primary" onClick={handleGenerateAccount} className={classes.generate}>
+                        <Button color="primary" onClick={handleGenerateAccount}>
                             Generate UUID
                         </Button>
                     </span>

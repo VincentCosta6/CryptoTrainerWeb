@@ -1,9 +1,9 @@
 import { FC, useState } from 'react'
 
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Button from '@material-ui/core/Button'
-import InputBase from '@material-ui/core/InputBase'
-import Paper from '@material-ui/core/Paper'
+import CircularProgress from '@mui/material/CircularProgress'
+import Button from '@mui/material/Button'
+import InputBase from '@mui/material/InputBase'
+import Paper from '@mui/material/Paper'
 
 import { setDollars } from '../redux/reducers/user'
 import { setCoinQuantity } from '../redux/reducers/usersCoins'

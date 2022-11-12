@@ -1,9 +1,9 @@
 import { FC } from 'react'
 
-import Drawer from '@material-ui/core/Drawer'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
+import Drawer from '@mui/material/Drawer'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 
 import { Icon, InlineIcon } from '@iconify/react';
 import bitcoinIcon from '@iconify-icons/logos/bitcoin';

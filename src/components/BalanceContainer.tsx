@@ -1,4 +1,4 @@
-import CircularProgress from '@material-ui/core/CircularProgress'
+import CircularProgress from '@mui/material/CircularProgress'
 
 import { useUserCoinBalance, useUserCoinBalanceLoading } from '../redux/selectors/usersCoinsSelectors';
 import { useCoinMap, useCoinsLoading, useSelectedCoin } from '../redux/selectors/coinSelectors';

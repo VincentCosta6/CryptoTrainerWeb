@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
-import ToggleButton from '@material-ui/lab/ToggleButton'
+import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup'
+import ToggleButton from '@mui/lab/ToggleButton'
 
 import BalanceContainer from './BalanceContainer'
 import History from './History'

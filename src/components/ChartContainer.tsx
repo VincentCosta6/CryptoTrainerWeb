@@ -1,7 +1,7 @@
 import { useState, useEffect, memo } from 'react'
 
-import Select from '@material-ui/core/Select'
-import MenuItem from '@material-ui/core/MenuItem'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
 import ReactEcharts from 'echarts-for-react'
 
 import moment from 'moment'

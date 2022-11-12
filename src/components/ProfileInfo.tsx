@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-import Person from '@material-ui/icons/Person'
+import Person from '@mui/icons-material/Person'
 
 import { useNavigate } from 'react-router-dom'
 
-import Button from '@material-ui/core/Button'
-import MenuItem from '@material-ui/core/MenuItem'
-import Menu from '@material-ui/core/Menu'
+import Button from '@mui/material/Button'
+import MenuItem from '@mui/material/MenuItem'
+import Menu from '@mui/material/Menu'
 
 import { useUserLoading, useUsername } from '../redux/selectors/userSelectors'
 

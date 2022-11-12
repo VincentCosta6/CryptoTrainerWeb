@@ -1,8 +1,8 @@
 import { useState } from 'react'
 
-import CircularProgress from '@material-ui/core/CircularProgress'
-import ToggleButton from '@material-ui/lab/ToggleButton'
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
+import CircularProgress from '@mui/material/CircularProgress'
+import ToggleButton from '@mui/lab/ToggleButton'
+import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup'
 
 import BuyContainer from './BuyContainer'
 import SellContainer from './SellContainer'

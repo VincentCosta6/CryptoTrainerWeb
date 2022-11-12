@@ -1,55 +1,60 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
-import { RootState, useAppDispatch } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TablePagination from '@material-ui/core/TablePagination';
+import TableRow from '@material-ui/core/TableRow';
+
 import LeveragedTrade from './LeveragedTrade'
 import OpenTradeView from './OpenTradeView'
+
 import { LeveragedTradeType, removeLeveragedTrade } from '../redux/reducers/leveragedTrade';
-import Modal from '@material-ui/core/Modal';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import { upColor } from './chartOptions';
+import { addTrade } from '../redux/reducers/trades';
 import { setDollars } from '../redux/reducers/user';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import { removeLiquidations } from '../redux/reducers/liquidations';
-import Divider from '@material-ui/core/Divider';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import TableBody from '@material-ui/core/TableBody';
+
+import { useAppDispatch } from '../redux/store'
+import { useLeveragedTrades } from '../redux/selectors/leveragedtradesSelectors';
+import { useCoinMap, useSelectedCoin } from '../redux/selectors/coinSelectors';
+import { useLastPrice } from '../redux/selectors/priceSelectors';
+import { useUserUUID } from '../redux/selectors/userSelectors';
 
 import './OpenTrades.scss'
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import { addTrade } from '../redux/reducers/trades';
 
-export const OpenTrades = (props: Props) => {
+export const OpenTrades = () => {
     const dispatch = useAppDispatch()
+
+    const uuid = useUserUUID()
+
+    const historicalLeveragedTrades = useLeveragedTrades()
+    const coinMap = useCoinMap()
+
+    const selectedCrypto = useSelectedCoin()
+    const lastPrice = useLastPrice()
 
     const [page, setPage] = useState(0)
     const [tradeChosen, setTradeChosen] = useState<LeveragedTradeType | null>(null)
     const [executionLoading, setExecutionLoading] = useState(false)
-    const [leveragedTrades, setLeveragedTrades] = useState<any>(props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto))
+    const [leveragedTrades, setLeveragedTrades] = useState<any>(() => historicalLeveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === selectedCrypto))
 
     const handleExecution = () => {
         setExecutionLoading(true)
-        fetch(`https://api.minecraftmarkets.com/leverage/sell/${props.coinMap[props.selectedCrypto].exchange}/${props.selectedCrypto}`, {
+        fetch(`https://api.minecraftmarkets.com/leverage/sell/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             // @ts-ignore
-            body: JSON.stringify({ uuid: props.uuid, priceAtExecution: props.lastPrice, tradeID: tradeChosen?._id })
+            body: JSON.stringify({ uuid: uuid, priceAtExecution: lastPrice, tradeID: tradeChosen?._id })
         })
             .then(res => res.json())
             .then(data => {
@@ -68,11 +73,11 @@ export const OpenTrades = (props: Props) => {
             })
     }
 
-    const length = props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto).length
+    const length = historicalLeveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === selectedCrypto).length
 
     useEffect(() => {
-        setLeveragedTrades(props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto))
-    }, [props.leveragedTrades])
+        setLeveragedTrades(historicalLeveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === selectedCrypto))
+    }, [historicalLeveragedTrades])
 
     useEffect(() => {
         if (page * 11 >= leveragedTrades.length) {
@@ -95,8 +100,8 @@ export const OpenTrades = (props: Props) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                        {props.leveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === props.selectedCrypto).slice(page * 11, page * 11 + 11).map((trade: LeveragedTradeType) => (
-                            <LeveragedTrade trade={trade} price={props.lastPrice} onClick={() => setTradeChosen(trade)} />
+                        {historicalLeveragedTrades.filter((trade: LeveragedTradeType) => trade.tradeOpen && trade.ticker === selectedCrypto).slice(page * 11, page * 11 + 11).map((trade: LeveragedTradeType) => (
+                            <LeveragedTrade trade={trade} price={lastPrice} onClick={() => setTradeChosen(trade)} />
                         ))}
                         </TableBody>
                     </Table>
@@ -150,20 +155,4 @@ export const OpenTrades = (props: Props) => {
     )
 };
 
-const mapStateToProps = (state: RootState) => ({
-    coinMap: state.coins.map,
-    uuid: state.user.uuid,
-    lastPrice: state.price.lastPrice,
-    leveragedTrades: state.leveragedTrades.leveragedTrades,
-    leverageLoading: state.leveragedTrades.loading,
-    selectedCrypto: state.coins.selectedCoin,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(OpenTrades)
+export default OpenTrades

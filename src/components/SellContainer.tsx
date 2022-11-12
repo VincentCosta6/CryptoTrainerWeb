@@ -1,63 +1,72 @@
-import React, { useState } from 'react'
+import { FC, useState } from 'react'
 
-import BalanceContainer, { getPriceWithProperZeroes, numberWithCommasAndRounded, tickerMap, toFixed } from './BalanceContainer'
-
-import { RootState, useAppDispatch } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Button from '@material-ui/core/Button'
+import InputBase from '@material-ui/core/InputBase'
+import Paper from '@material-ui/core/Paper'
 
 import { setDollars } from '../redux/reducers/user'
 import { setCoinQuantity } from '../redux/reducers/usersCoins'
 import { addTrade } from '../redux/reducers/trades'
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
-import ToggleButton from '@material-ui/lab/ToggleButton'
-import Paper from '@material-ui/core/Paper'
-import Button from '@material-ui/core/Button'
-import InputBase from '@material-ui/core/InputBase'
-import CircularProgress from '@material-ui/core/CircularProgress'
 
-export const TradingActionContainer = (props: Props) => {
+import { useAppDispatch } from '../redux/store'
+import { useCoinMap, useSelectedCoin } from '../redux/selectors/coinSelectors'
+import { useUserCoinBalance } from '../redux/selectors/usersCoinsSelectors'
+import { useUserDollarBalance, useUserUUID } from '../redux/selectors/userSelectors'
+import { useLastPrice } from '../redux/selectors/priceSelectors'
+
+import { getPriceWithProperZeroes, numberWithCommasAndRounded, toFixed } from './BalanceContainer'
+
+interface TradingActionContainerProps {
+    otherActionLoading: boolean
+    sellLoading: boolean
+    setSellLoading: Function
+}
+export const TradingActionContainer: FC<TradingActionContainerProps> = ({
+    otherActionLoading,
+    sellLoading,
+    setSellLoading,
+}) => {
     const dispatch = useAppDispatch()
+
+    const coinMap = useCoinMap()
+    const selectedCrypto = useSelectedCoin()
+
+    const coinBalance = useUserCoinBalance()
+    const userUUID = useUserUUID()
 
     const [maxSell, setMaxSell] = useState(false)
     const [sellField, setSellField] = useState('')
 
     const handleSell = () => {
-        props.setSellLoading(true)
-        fetch(`https://api.minecraftmarkets.com/coins/sell/${props.coinMap[props.selectedCrypto].exchange}/${props.selectedCrypto}`, {
+        setSellLoading(true)
+        fetch(`https://api.minecraftmarkets.com/coins/sell/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ amount: maxSell ? props.coinBalance[props.selectedCrypto] : sellField, uuid: props.userUUID, priceAtExecution: props.lastPrice, max: maxSell })
+            body: JSON.stringify({ amount: maxSell ? coinBalance[selectedCrypto] : sellField, uuid: userUUID, priceAtExecution: 0, max: maxSell })
         })
             .then(res => res.json())
             .then(data => {
                 const updateInfo = data.data
                 dispatch(setCoinQuantity({
-                    ticker: props.selectedCrypto,
+                    ticker: selectedCrypto,
                     quantity: updateInfo.newCoinAmount
                 }))
                 dispatch(addTrade(updateInfo.trade))
                 dispatch(setDollars(updateInfo.newDollars))
-                props.setSellLoading(false)
+                setSellLoading(false)
                 setSellField('0')
                 setMaxSell(false)
             })
             .catch(err => {
                 console.log(err)
-                props.setSellLoading(false)
+                setSellLoading(false)
                 setMaxSell(false)
             })
     }
-
-    const price = getPriceWithProperZeroes(Number(props.lastPrice) * .99985)
-    const fees = Number(sellField) * .003 * price
-
-    const newMoney = Number(sellField) * Number(price) - fees
-
-    const newBalance = Number(props.dollarBalance) + newMoney
-    const remainingCoins =  maxSell ? 0 : Number(props.coinBalance[props.selectedCrypto] || 0) - Number(sellField)
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', borderBottom: '1px solid #262d34' }}>
@@ -69,12 +78,12 @@ export const TradingActionContainer = (props: Props) => {
                         variant="text"
                         size="small"
                         onClick={() => {
-                            setSellField(toFixed(Number(props.coinBalance[props.selectedCrypto] || 0), 6) + "")
+                            setSellField(toFixed(Number(coinBalance[selectedCrypto] || 0), 6) + "")
                             setMaxSell(true)
                         }}
                     >
                         Max
-                                        </Button>
+                    </Button>
                     <InputBase
                         placeholder="0.00"
                         inputProps={{ 'aria-label': 'search google maps' }}
@@ -93,7 +102,7 @@ export const TradingActionContainer = (props: Props) => {
                         variant="contained"
                         size="small"
                         onClick={handleSell}
-                        disabled={props.sellLoading || props.otherActionLoading}
+                        disabled={sellLoading || otherActionLoading}
                         style={{
                             backgroundColor: '#f9672d',
                             color: 'white',
@@ -101,7 +110,7 @@ export const TradingActionContainer = (props: Props) => {
                         }}
                     >
                         {
-                            props.sellLoading ? (
+                            sellLoading ? (
                                 <CircularProgress size={15} />
                             ) : 'SELL'
                         }
@@ -109,42 +118,45 @@ export const TradingActionContainer = (props: Props) => {
                 </Paper>
             </div>
             <div style={{ marginTop: 10 }}>
-                <div style={{ marginLeft: 7 }}>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: ${numberWithCommasAndRounded(newBalance, 2)} (+${numberWithCommasAndRounded(newMoney, 2)})</p>
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: {numberWithCommasAndRounded(remainingCoins, 6)}</p>
-                </div>
+                { sellField !== '' && (
+                    <NewBalanceContainer 
+                        sellField={sellField}
+                        maxSell={maxSell}
+                    />
+                ) }
             </div>
         </div>
     )
-};
-
-const mapStateToProps = (state: RootState) => ({
-    dollarBalance: state.user.dollars,
-    candlesLoading: state.price.loading,
-    coinMap: state.coins.map,
-    coinLoading: state.coins.loading,
-    selectedCrypto: state.coins.selectedCoin,
-    selectedInterval: state.price.selectedInterval,
-    subscriptions: state.price.subscriptions,
-    lastPrice: state.price.lastPrice,
-    websocketConnected: state.price.websocketConnected,
-    prices: state.price.prices,
-    pricesLoading: state.price.loading,
-    userLoading: state.user.loading,
-    userUUID: state.user.uuid,
-    coinBalance: state.usersCoins.tickers,
-    marketTrades: state.marketTrades.trades,
-    myTradesLoading: state.trades.loading,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-    otherActionLoading: boolean
-    sellLoading: boolean
-    setSellLoading: Function
 }
 
-export default connector(TradingActionContainer)
+interface NewBalanceContainerProps {
+    sellField: string
+    maxSell: boolean
+}
+export const NewBalanceContainer: FC<NewBalanceContainerProps> = ({
+    sellField,
+    maxSell,
+}) => {
+    const coinBalance = useUserCoinBalance()
+    const dollarBalance = useUserDollarBalance()
+    const lastPrice = useLastPrice()
+    const selectedCrypto = useSelectedCoin()
+
+    const price = getPriceWithProperZeroes(Number(lastPrice) * .99985)
+    const fees = Number(sellField) * .003 * price
+
+    const newMoney = Number(sellField) * Number(price) - fees
+
+    const newBalance = Number(dollarBalance) + newMoney
+    const remainingCoins = maxSell ? 0 : Number(coinBalance[selectedCrypto] || 0) - Number(sellField)
+
+    return (
+        <div style={{ marginLeft: 7 }}>
+            <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
+            <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: ${numberWithCommasAndRounded(newBalance, 2)} (+${numberWithCommasAndRounded(newMoney, 2)})</p>
+            <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: {numberWithCommasAndRounded(remainingCoins, 6)}</p>
+        </div>
+    )
+}
+
+export default TradingActionContainer

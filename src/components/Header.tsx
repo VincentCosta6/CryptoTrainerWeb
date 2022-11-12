@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars } from '@fortawesome/free-solid-svg-icons'
 
 import DrawerComponent from './DrawerComponent'
 import ProfileInfo from './ProfileInfo'
-import { RootState } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
+
+import { usePriceLoading, useSelectedInterval, useWebsocketConnected } from '../redux/selectors/priceSelectors'
+import { useCoinMap, useSelectedCoin } from '../redux/selectors/coinSelectors'
 
 import ws from '../websocket/cryptoPrice2'
-import { setTimeInterval } from '../redux/reducers/price'
 
 const websocketColors = {
     'idle': 'grey',
@@ -24,7 +24,14 @@ const websocketTexts = {
     'error': 'Error connecting'
 }
 
-export const Header = (props: Props) => {
+export const Header = () => {
+    const pricesLoading = usePriceLoading()
+    const websocketConnected = useWebsocketConnected()
+
+    const coinMap = useCoinMap()
+    const selectedCrypto = useSelectedCoin()
+    const selectedInterval = useSelectedInterval()
+
     const [drawerOpen, setDrawerOpen] = useState(false)
     const closeDrawer = () => setDrawerOpen(false)
     const openDrawer = () => setDrawerOpen(true)
@@ -32,15 +39,15 @@ export const Header = (props: Props) => {
     const [reconnectionTimeout, setReconnectionTimeout] = useState<any>(null)
 
     useEffect(() => {
-        websocket?.send(JSON.stringify({ type: 'changeCrypto', currencyPairId: props.coinMap[props.selectedCrypto].cryptowatchID }))
-    }, [props.selectedCrypto])
+        websocket?.send(JSON.stringify({ type: 'changeCrypto', currencyPairId: coinMap[selectedCrypto].cryptowatchID }))
+    }, [selectedCrypto])
 
     useEffect(() => {
-        websocket?.send(JSON.stringify({ type: 'changeInterval', interval: props.selectedInterval }))
-    }, [props.selectedInterval])
+        websocket?.send(JSON.stringify({ type: 'changeInterval', interval: selectedInterval }))
+    }, [selectedInterval])
 
     useEffect(() => {
-        if (websocket && props.websocketConnected === 'idle') {
+        if (websocket && websocketConnected === 'idle') {
             clearTimeout(reconnectionTimeout)
             setReconnectionTimeout(
                 setTimeout(() => {
@@ -49,16 +56,16 @@ export const Header = (props: Props) => {
                 }, 10000)
             )
         }
-    }, [props.websocketConnected])
+    }, [websocketConnected])
 
     useEffect(() => {
-        if (props.pricesLoading === 'success' && props.websocketConnected === 'idle') {
+        if (pricesLoading === 'success' && websocketConnected === 'idle') {
             setWebsocket(ws(false))
         }
-    }, [props.pricesLoading])
+    }, [pricesLoading])
 
-    const websocketColor = websocketColors[props.websocketConnected]
-    const websocketText = websocketTexts[props.websocketConnected]
+    const websocketColor = websocketColors[websocketConnected]
+    const websocketText = websocketTexts[websocketConnected]
 
     return (
         <>
@@ -76,19 +83,4 @@ export const Header = (props: Props) => {
     )
 };
 
-const mapStateToProps = (state: RootState) => ({
-    coinMap: state.coins.map,
-    pricesLoading: state.price.loading,
-    selectedCrypto: state.coins.selectedCoin,
-    selectedInterval: state.price.selectedInterval,
-    websocketConnected: state.price.websocketConnected,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(Header)
+export default Header

@@ -134,7 +134,7 @@ export default () => {
             <div className="login-container">
                 <div className="form-container">
                     <h2 className={classes.title}>Login</h2>
-                    <TextField className={classes.input} label = "UUID" value = {UUID} onChange={handleUUIDChange} />
+                    <TextField className={classes.input} label = "UUID" value = {UUID} onChange={handleUUIDChange} inputProps={{ style: { paddingLeft: '8px' } }} />
 
                     <Button variant="contained"  color="primary" onClick={handleLogin} disabled={loading}>
                         Login
@@ -150,7 +150,6 @@ export default () => {
                             Generate UUID
                         </Button>
                     </span>
-                    <p className={classes.tip}>Tip: After logging in / generating an account make sure you bookmark the page</p>
                 </div>
             </div>
             <Dialog

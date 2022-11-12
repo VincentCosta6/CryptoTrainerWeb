@@ -3,6 +3,7 @@ import { Coin } from './coins';
 import { LeveragedTradeType } from './leveragedTrade';
 
 export interface Trade {
+    _id: string
     ticker: string
     type: 'buy' | 'sell' | 'CLOSE',
     quantity: number,

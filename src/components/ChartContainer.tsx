@@ -1,20 +1,24 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 
-import { RootState, useAppDispatch } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
 import Select from '@material-ui/core/Select'
 import MenuItem from '@material-ui/core/MenuItem'
 import ReactEcharts from 'echarts-for-react'
-import { fetchCoinPrice, setLastPrice, setTimeInterval, timeIntervalsList } from '../redux/reducers/price'
-import { generateChart } from './chartOptions'
-import { clearTrades } from '../redux/reducers/marketTrades'
-import { getPriceWithProperZeroes, nameMap, tickerMap } from './BalanceContainer'
-import { CoinIcon } from './DrawerComponent'
 
 import moment from 'moment'
 
-import './ChartContainer.scss'
+import { CoinIcon } from './DrawerComponent'
 
+import { clearTrades } from '../redux/reducers/marketTrades'
+import { fetchCoinPrice, setTimeInterval, timeIntervalsList } from '../redux/reducers/price'
+
+import { useAppDispatch } from '../redux/store'
+import { useLastPrice, usePriceLoading, usePrices, useSelectedInterval } from '../redux/selectors/priceSelectors'
+import { useCoinMap, useCoins, useSelectedCoin } from '../redux/selectors/coinSelectors'
+
+import { getPriceWithProperZeroes, tickerMap } from './BalanceContainer'
+import { generateChart } from './chartOptions'
+
+import './ChartContainer.scss'
 export interface ZoomInfo {
     start: number,
     end: number,
@@ -29,8 +33,17 @@ const formatMap = {
     '86400': (candle: number) =>  moment(candle).format('MM/DD h:mm A'),
 }
 
-export const ChartContainer = (props: Props) => {
+export const ChartContainer = () => {
     const dispatch = useAppDispatch()
+
+    const candlesLoading = usePriceLoading()
+
+    const lastPrice = useLastPrice()
+    const selectedCrypto = useSelectedCoin()
+    const coinMap = useCoinMap()
+    const selectedInterval = useSelectedInterval()
+    const coins = useCoins()
+    const prices = usePrices()
 
     const [chartData, setChartData] = useState<any>()
     // before the last price
@@ -48,45 +61,45 @@ export const ChartContainer = (props: Props) => {
     })
 
     useEffect(() => {
-        if (Number(props.lastPrice) > previousPrice) {
+        if (Number(lastPrice) > previousPrice) {
             setColor('green')
-        } else if (Number(props.lastPrice) < previousPrice) {
+        } else if (Number(lastPrice) < previousPrice) {
             setColor('red')
         }
 
-        setPreviousPrice(props.lastPrice)
-    }, [props.lastPrice])
+        setPreviousPrice(lastPrice)
+    }, [lastPrice])
 
     useEffect(() => {
         dispatch(fetchCoinPrice({
-            ticker: props.selectedCrypto,
-            exchange: props.coinMap[props.selectedCrypto].exchange,
-            interval: props.selectedInterval,
-            coins: props.coins,
+            ticker: selectedCrypto,
+            exchange: coinMap[selectedCrypto].exchange,
+            interval: selectedInterval,
+            coins: coins,
         }))
         // @ts-ignore
-    }, [props.selectedInterval, props.selectedCrypto])
+    }, [selectedInterval, selectedCrypto])
 
     useEffect(() => {
-        if (props.prices && props.prices[props.selectedCrypto] && props.prices[props.selectedCrypto][props.selectedInterval]) {
+        if (prices && prices[selectedCrypto] && prices[selectedCrypto][selectedInterval]) {
             // @ts-ignore
-            const intervals = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => formatMap[props.selectedInterval](candle.x))
+            const intervals = prices[selectedCrypto][selectedInterval].map(candle => formatMap[selectedInterval](candle.x))
             // O: 0, H: 1, L: 2, C: 3
             // O C L H
-            const seriesData = props.prices[props.selectedCrypto][props.selectedInterval].map(candle => [candle.y[0], candle.y[3], candle.y[2], candle.y[1]])
-            const volumes = props.prices[props.selectedCrypto][props.selectedInterval].map((candle, index) => {
+            const seriesData = prices[selectedCrypto][selectedInterval].map(candle => [candle.y[0], candle.y[3], candle.y[2], candle.y[1]])
+            const volumes = prices[selectedCrypto][selectedInterval].map((candle, index) => {
                 const candleOpen = candle.y[0]
                 const candleClosed = candle.y[3]
 
                 return [index, candle.z[0], candleOpen < candleClosed ? 1 : -1]
             })
 
-            const options = generateChart(tickerMap[props.selectedCrypto], intervals, seriesData, volumes, zoomData)
+            const options = generateChart(tickerMap[selectedCrypto], intervals, seriesData, volumes, zoomData)
             setChartData(options)
         }
-    }, [props.prices])
+    }, [prices])
 
-    const tickerPrice = getPriceWithProperZeroes(props.lastPrice)
+    const tickerPrice = getPriceWithProperZeroes(lastPrice)
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -94,26 +107,17 @@ export const ChartContainer = (props: Props) => {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <div style={{ marginLeft: 15, marginRight: 15, marginTop: 8 }}>
                         { /* @ts-ignore */ }
-                        <CoinIcon name={props.selectedCrypto} />
+                        <CoinIcon name={selectedCrypto} />
                     </div>
-                    <h1 style={{ color: '#8a939f', margin: 0, fontSize: '2.4rem' }}>{tickerMap[props.selectedCrypto]}: $ </h1>
+                    <h1 style={{ color: '#8a939f', margin: 0, fontSize: '2.4rem' }}>{tickerMap[selectedCrypto]}: $ </h1>
                     <h1 style={{ margin: 0, color, fontSize: '2.4rem' }}> {tickerPrice}</h1>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <Select
-                        value={props.selectedInterval}
-                        onChange={(event: any) => {
-                            dispatch(setTimeInterval(event.target.value))
-                            dispatch(clearTrades(props.selectedCrypto))
-                        }}
-                        style={{ color: '#8a939f', borderColor: '#8a939f' }}
-                    >
-                        { timeIntervalsList.map(interval => <MenuItem key = {interval.value} value={interval.value}>{interval.name}</MenuItem>) }
-                    </Select>
+                    <TimeIntervalSelector />
                 </div>
             </div>
                 {
-                    props.candlesLoading === 'success' && chartData && (
+                    candlesLoading === 'success' && chartData && (
                         <ReactEcharts
                             option={chartData}
                             notMerge={false}
@@ -126,21 +130,24 @@ export const ChartContainer = (props: Props) => {
     )
 };
 
-const mapStateToProps = (state: RootState) => ({
-    candlesLoading: state.price.loading,
-    coins: state.coins.coins,
-    coinMap: state.coins.map,
-    lastPrice: state.price.lastPrice,
-    prices: state.price.prices,
-    selectedCrypto: state.coins.selectedCoin,
-    selectedInterval: state.price.selectedInterval,
+const TimeIntervalSelector = memo(() => {
+    const dispatch = useAppDispatch()
+
+    const selectedCrypto = useSelectedCoin()
+    const selectedInterval = useSelectedInterval()
+
+    return (
+        <Select
+            value={selectedInterval}
+            onChange={(event: any) => {
+                dispatch(setTimeInterval(event.target.value))
+                dispatch(clearTrades(selectedCrypto))
+            }}
+            style={{ color: '#8a939f', borderColor: '#8a939f' }}
+        >
+            { timeIntervalsList.map(interval => <MenuItem key = {interval.value} value={interval.value}>{interval.name}</MenuItem>) }
+        </Select>
+    )
 })
 
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(ChartContainer)
+export default ChartContainer

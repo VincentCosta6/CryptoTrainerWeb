@@ -1,7 +1,5 @@
 import { useState } from 'react'
 
-import { RootState } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -9,18 +7,26 @@ import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import TableBody from '@material-ui/core/TableBody';
-
-import './History.scss'
 import TablePagination from '@material-ui/core/TablePagination';
+
 import { Trade } from '../redux/reducers/trades';
+import { useTrades } from '../redux/selectors/tradesSelectors';
+import { useSelectedCoin } from '../redux/selectors/coinSelectors';
+import { useLastPrice } from '../redux/selectors/priceSelectors';
 import { numberWithCommasAndRounded } from './BalanceContainer';
 
-export const History = (props: Props) => {
+import './History.scss'
+
+export const History = () => {
+    const trades = useTrades()
+    const selectedCrypto = useSelectedCoin()
+
+    const lastPrice = useLastPrice()
 
     const [page, setPage] = useState(0)
     const [tradeChosen, setTradeChosen] = useState<Trade | null>(null)
 
-    const currentTrades = props.trades[props.selectedCrypto].slice().reverse()
+    const currentTrades = trades[selectedCrypto].slice().reverse()
     const length = currentTrades.length
 
     return (
@@ -38,7 +44,7 @@ export const History = (props: Props) => {
                         </TableHead>
                         <TableBody>
                         {currentTrades.slice(page * 11, page * 11 + 11).map((trade: Trade) => (
-                            <TradeComp trade={trade} onClick={() => setTradeChosen(trade)} price={props.lastPrice} />
+                            <TradeComp key={trade._id} trade={trade} onClick={() => setTradeChosen(trade)} price={lastPrice} />
                         ))}
                         </TableBody>
                     </Table>
@@ -120,20 +126,4 @@ export const TradeComp = ({ trade, onClick, price }: { trade: Trade, onClick: Fu
     )
 }
 
-const mapStateToProps = (state: RootState) => ({
-    coinMap: state.coins.map,
-    uuid: state.user.uuid,
-    lastPrice: state.price.lastPrice,
-    trades: state.trades.trades,
-    tradesLoading: state.trades.loading,
-    selectedCrypto: state.coins.selectedCoin,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(History)
+export default History

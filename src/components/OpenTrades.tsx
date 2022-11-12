@@ -114,7 +114,7 @@ export const OpenTrades = (props: Props) => {
                                 inputProps: { 'aria-label': 'rows per page' },
                                 native: true,
                             }}
-                            onChangePage={(event, newPage) => setPage(newPage)}
+                            onPageChange={(event, newPage) => setPage(newPage)}
                             style={{  }}
                         />
                     )

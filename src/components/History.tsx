@@ -1,24 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-import { RootState, useAppDispatch } from '../redux/store'
+import { RootState } from '../redux/store'
 import { connect, ConnectedProps } from 'react-redux'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import LeveragedTrade from './LeveragedTrade'
-import OpenTradeView from './OpenTradeView'
-import { LeveragedTradeType, removeLeveragedTrade } from '../redux/reducers/leveragedTrade';
-import Modal from '@material-ui/core/Modal';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import { upColor } from './chartOptions';
-import { setDollars } from '../redux/reducers/user';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import { removeLiquidations } from '../redux/reducers/liquidations';
-import Divider from '@material-ui/core/Divider';
 import TableContainer from '@material-ui/core/TableContainer';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -28,14 +11,11 @@ import Paper from '@material-ui/core/Paper';
 import TableBody from '@material-ui/core/TableBody';
 
 import './History.scss'
-import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
-import { addTrade, Trade } from '../redux/reducers/trades';
-import { MarketTradeType } from '../redux/reducers/marketTrades';
+import { Trade } from '../redux/reducers/trades';
 import { numberWithCommasAndRounded } from './BalanceContainer';
 
 export const History = (props: Props) => {
-    const dispatch = useAppDispatch()
 
     const [page, setPage] = useState(0)
     const [tradeChosen, setTradeChosen] = useState<Trade | null>(null)
@@ -76,7 +56,7 @@ export const History = (props: Props) => {
                                 inputProps: { 'aria-label': 'rows per page' },
                                 native: true,
                             }}
-                            onChangePage={(event, newPage) => setPage(newPage)}
+                            onPageChange={(event, newPage) => setPage(newPage)}
                             style={{  }}
                         />
                     )

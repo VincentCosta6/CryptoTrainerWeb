@@ -65,7 +65,7 @@ export const Header = (props: Props) => {
             <DrawerComponent open={drawerOpen} onClose={closeDrawer} />
             <header className="main-header">
                 <div className="drawer-container" onClick={openDrawer}>
-                    <FontAwesomeIcon icon={faBars} />
+                    <FontAwesomeIcon icon={faBars as any} />
                     <span className="styled-icon" style = {{ backgroundColor: websocketColor }}></span>
                     <p>{websocketText}</p>
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { 
     TextField, 
@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default () => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const classes = useStyles();
 
     const [UUID, setUUID] = useState<string>('')
@@ -92,7 +92,7 @@ export default () => {
         }
 
         setError('')
-        history.push(`/user/${UUID}`)
+        navigate(`/user/${UUID}`)
     }
 
     const handleGenerateAccount = () => {
@@ -126,7 +126,7 @@ export default () => {
             return
         }
 
-        history.push(`/user/${response.uuid}`)
+        navigate(`/user/${response.uuid}`)
     }
 
     return (

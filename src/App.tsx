@@ -1,36 +1,31 @@
 import React from 'react';
 
-import { Provider } from 'react-redux'
 import {
-  BrowserRouter as Router,
-  Switch,
+  BrowserRouter,
+  Routes,
   Route,
 } from "react-router-dom";
 
-import Header from './components/Header';
-import Homepage from './routes/Homepage';
-import FetchUserInfo from './routes/FetchUserInfo';
-import NotFound from './routes/404';
+import ProviderRoot from './ProviderRoot';
 
-import store from './redux/store'
+import Header from './components/Header';
+import Login from './routes/Login';
+import Dashboard from './routes/Dashboard';
+import NotFound from './routes/404';
 
 import './App.scss';
 
-function App() {
-  return (
-    <div className="App">
-      <Provider store={store}>
-        <Header />
-        <Router>
-          <Switch>
-            <Route exact path="/" component={Homepage} />
-            <Route exact path="/user/:hashedUser" component={FetchUserInfo} />
-            <Route path="*" component={NotFound} />
-          </Switch>
-        </Router>
-      </Provider>
-    </div>
-  );
-}
+const App = () => (
+  <ProviderRoot>
+    <BrowserRouter>
+      <Header />
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/user/:hashedUser" element={<Dashboard />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  </ProviderRoot>
+)
 
 export default App;

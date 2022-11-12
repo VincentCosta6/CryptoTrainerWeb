@@ -8,7 +8,7 @@ import { addLiquidation } from '../redux/reducers/liquidations'
 
 const dispatch = store.dispatch
 
-let cryptoWatchSocketClient: any
+let cryptoWatchSocketClient: WebSocket
 
 const init = (reconnectAttempt: boolean) => {
   cryptoWatchSocketClient = new WebSocket(`wss://api.minecraftmarkets.com/websocket`);
@@ -100,7 +100,7 @@ const init = (reconnectAttempt: boolean) => {
 
   }
 
-  cryptoWatchSocketClient.onerror = (err: ErrorEvent) => {
+  cryptoWatchSocketClient.onerror = (err: Event) => {
     dispatch(setWebsocketStatus('error'))
     console.log('Websocket new error', err)
   }

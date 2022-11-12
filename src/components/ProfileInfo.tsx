@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { RootState } from '../redux/store'
 import Person from '@material-ui/icons/Person'
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { connect, ConnectedProps } from 'react-redux'
 import Button from '@material-ui/core/Button'
@@ -11,7 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 import Menu from '@material-ui/core/Menu'
 
 const ProfileInfo = (props: Props) => {
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [anchorEl, setAnchorEl] = useState(null)
 
@@ -24,7 +24,7 @@ const ProfileInfo = (props: Props) => {
     }
 
     const handleLogout = () => {
-        history.push('/user')
+        navigate('/user')
     }
 
     if (props.user.loading === 'idle') {

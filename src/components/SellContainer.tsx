@@ -40,7 +40,7 @@ export const TradingActionContainer: FC<TradingActionContainerProps> = ({
 
     const handleSell = () => {
         setSellLoading(true)
-        fetch(`https://api.minecraftmarkets.com/coins/sell/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
+        fetch(`https://api.cryptotrainer.us/coins/sell/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

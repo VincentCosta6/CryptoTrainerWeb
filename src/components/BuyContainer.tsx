@@ -51,7 +51,7 @@ export const BuyContainer = (props: BuyContainerProps) => {
 
     const handleBuy = () => {
         props.setBuyLoading(true)
-        fetch(`https://api.minecraftmarkets.com/coins/buy/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
+        fetch(`https://api.cryptotrainer.us/coins/buy/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -80,7 +80,7 @@ export const BuyContainer = (props: BuyContainerProps) => {
 
     const handleLeveragedBuy = () => {
         props.setBuyLoading(true)
-        fetch(`https://api.minecraftmarkets.com/leverage/buy/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
+        fetch(`https://api.cryptotrainer.us/leverage/buy/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

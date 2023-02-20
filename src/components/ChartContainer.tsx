@@ -138,6 +138,7 @@ const TimeIntervalSelector = memo(() => {
 
     return (
         <Select
+            variant="standard"
             value={selectedInterval}
             onChange={(event: any) => {
                 dispatch(setTimeInterval(event.target.value))
@@ -145,7 +146,7 @@ const TimeIntervalSelector = memo(() => {
             }}
             style={{ color: '#8a939f', borderColor: '#8a939f' }}
         >
-            { timeIntervalsList.map(interval => <MenuItem key = {interval.value} value={interval.value}>{interval.name}</MenuItem>) }
+            { timeIntervalsList.map(interval => <MenuItem key={interval.value} value={interval.value}>{interval.name}</MenuItem>) }
         </Select>
     )
 })

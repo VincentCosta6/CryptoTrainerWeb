@@ -11,7 +11,7 @@ const dispatch = store.dispatch
 let cryptoWatchSocketClient: WebSocket
 
 const init = (reconnectAttempt: boolean) => {
-  cryptoWatchSocketClient = new WebSocket(`wss://api.minecraftmarkets.com/websocket`);
+  cryptoWatchSocketClient = new WebSocket(`wss://api.cryptotrainer.us/websocket`);
 
   dispatch(setWebsocketStatus('pending'))
 

@@ -20,7 +20,7 @@ interface FetchUsersCoinsByUUIDParams {
 export const fetchUsersCoinsByUUID = createAsyncThunk(
     'users/fetchUsersCoinsByUUID',
     async (params: FetchUsersCoinsByUUIDParams) => {
-        const response = await (await fetch(`https://api.minecraftmarkets.com/users/${params.uuid}/coins/`)).json();
+        const response = await (await fetch(`https://api.cryptotrainer.us/users/${params.uuid}/coins/`)).json();
 
         const defaultTickersObj = params.coins.reduce((acc: { [ticker: string]: number }, coin: string) => {
             acc[coin] = 0

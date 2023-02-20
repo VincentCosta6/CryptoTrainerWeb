@@ -47,7 +47,7 @@ export const OpenTrades = () => {
 
     const handleExecution = () => {
         setExecutionLoading(true)
-        fetch(`https://api.minecraftmarkets.com/leverage/sell/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
+        fetch(`https://api.cryptotrainer.us/leverage/sell/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

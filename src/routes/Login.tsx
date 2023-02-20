@@ -40,7 +40,7 @@ export default () => {
     const handleLogin = async () => {
         setError('')
         setLoading(true)
-        const response = await (await fetch(`https://api.minecraftmarkets.com/user/${UUID}`)).json();
+        const response = await (await fetch(`https://api.cryptotrainer.us/user/${UUID}`)).json();
         setLoading(false)
 
         if (!response.user) {
@@ -67,7 +67,7 @@ export default () => {
         setModalLoading(true)
         setErrorModal('')
 
-        const response = await (await fetch(`https://api.minecraftmarkets.com/user/create`, {
+        const response = await (await fetch(`https://api.cryptotrainer.us/user/create`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -90,8 +90,8 @@ export default () => {
         <div className="homepage-body">
             <div className="login-container">
                 <div className="form-container">
-                    <h2>Login</h2>
-                    <TextField label = "UUID" value = {UUID} onChange={handleUUIDChange} inputProps={{ style: { paddingLeft: '8px' } }} />
+                    <h2 style={{ color: 'white' }}>Login</h2>
+                    <TextField label = "UUID" value = {UUID} onChange={handleUUIDChange} inputProps={{ style: { paddingLeft: '8px' }, }} sx={{ borderColor: 'white' }}  />
 
                     <Button variant="contained"  color="primary" onClick={handleLogin} disabled={loading}>
                         Login
@@ -101,7 +101,7 @@ export default () => {
 
                     { error && <p>{error}</p> }
 
-                    <span>
+                    <span style={{ color: 'white' }}>
                         Dont have a UUID?
                         <Button color="primary" onClick={handleGenerateAccount}>
                             Generate UUID

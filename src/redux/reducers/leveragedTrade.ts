@@ -34,7 +34,7 @@ interface FetchLeveragedTradesPayload {
 export const fetchLeveragedTradesList = createAsyncThunk(
     'leveragedTrades/fetchLeveragedTradeList',
     async (payload: FetchLeveragedTradesPayload) => {
-        const response = await (await fetch(`https://api.minecraftmarkets.com/leverage/user/${payload.uuid}`)).json();
+        const response = await (await fetch(`https://api.cryptotrainer.us/leverage/user/${payload.uuid}`)).json();
 
         return response.leveragedTrades
     }

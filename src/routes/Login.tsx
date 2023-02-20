@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { 
     TextField, 
@@ -13,55 +13,12 @@ import {
     DialogContent,
     DialogContentText,
     DialogActions,
-} from '@material-ui/core'
-
-import {
-    makeStyles, 
-    createStyles, 
-} from '@material-ui/core'
+} from '@mui/material'
 
 import './Homepage.scss'
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        input: {
-            flex: 1,
-            backgroundColor: '#121d27',
-            marginBottom: 25,
-            marginLeft: 0,
-            color: 'white'
-        },
-        iconButton: {
-            padding: 10,
-        },
-        divider: {
-            height: 28,
-            margin: 4,
-        },
-        tip: {
-            color: 'white',
-            margin: 0
-        },
-        title: {
-            color: 'white',
-            marginBottom: 50
-        },
-        signup: {
-            color: 'white',
-            margin: '20px 0px'
-        },
-        generate: {
-            marginLeft: '10px'
-        },
-        error: {
-            color: 'red'
-        }
-    }),
-);
-
 export default () => {
-    const history = useHistory()
-    const classes = useStyles();
+    const navigate = useNavigate()
 
     const [UUID, setUUID] = useState<string>('')
     const [loading, setLoading] = useState(false)
@@ -83,7 +40,7 @@ export default () => {
     const handleLogin = async () => {
         setError('')
         setLoading(true)
-        const response = await (await fetch(`https://api.minecraftmarkets.com/user/${UUID}`)).json();
+        const response = await (await fetch(`https://api.cryptotrainer.us/user/${UUID}`)).json();
         setLoading(false)
 
         if (!response.user) {
@@ -92,7 +49,7 @@ export default () => {
         }
 
         setError('')
-        history.push(`/user/${UUID}`)
+        navigate(`/user/${UUID}`)
     }
 
     const handleGenerateAccount = () => {
@@ -110,7 +67,7 @@ export default () => {
         setModalLoading(true)
         setErrorModal('')
 
-        const response = await (await fetch(`https://api.minecraftmarkets.com/user/create`, {
+        const response = await (await fetch(`https://api.cryptotrainer.us/user/create`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -126,15 +83,15 @@ export default () => {
             return
         }
 
-        history.push(`/user/${response.uuid}`)
+        navigate(`/user/${response.uuid}`)
     }
 
     return (
         <div className="homepage-body">
             <div className="login-container">
                 <div className="form-container">
-                    <h2 className={classes.title}>Login</h2>
-                    <TextField className={classes.input} label = "UUID" value = {UUID} onChange={handleUUIDChange} />
+                    <h2 style={{ color: 'white' }}>Login</h2>
+                    <TextField label = "UUID" value = {UUID} onChange={handleUUIDChange} inputProps={{ style: { paddingLeft: '8px' }, }} sx={{ borderColor: 'white' }}  />
 
                     <Button variant="contained"  color="primary" onClick={handleLogin} disabled={loading}>
                         Login
@@ -142,15 +99,14 @@ export default () => {
 
                     { loading && <LinearProgress /> }
 
-                    { error && <p className={classes.error}>{error}</p> }
+                    { error && <p>{error}</p> }
 
-                    <span className={classes.signup}>
+                    <span style={{ color: 'white' }}>
                         Dont have a UUID?
-                        <Button color="primary" onClick={handleGenerateAccount} className={classes.generate}>
+                        <Button color="primary" onClick={handleGenerateAccount}>
                             Generate UUID
                         </Button>
                     </span>
-                    <p className={classes.tip}>Tip: After logging in / generating an account make sure you bookmark the page</p>
                 </div>
             </div>
             <Dialog

@@ -1,18 +1,16 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
+
+import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup'
+import ToggleButton from '@mui/lab/ToggleButton'
 
 import BalanceContainer from './BalanceContainer'
-import TradingActionContainer from './TradingActionContainer'
-import OpenTrades from './OpenTrades'
 import History from './History'
+import OpenTrades from './OpenTrades'
+import TradingActionContainer from './TradingActionContainer'
 
-import { RootState } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
-
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
-import ToggleButton from '@material-ui/lab/ToggleButton'
 import './LeftPanel.scss'
 
-export const ChartContainer = (props: Props) => {
+export const ChartContainer = () => {
     const [activeTab, setActiveTab] = useState<string>("1")
 
     const handleChange = (event: any, newValue: any) => {
@@ -76,15 +74,4 @@ export const ChartContainer = (props: Props) => {
     )
 };
 
-const mapStateToProps = (state: RootState) => ({
-
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(ChartContainer)
+export default ChartContainer

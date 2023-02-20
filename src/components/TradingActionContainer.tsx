@@ -1,22 +1,23 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
+
+import CircularProgress from '@mui/material/CircularProgress'
+import ToggleButton from '@mui/lab/ToggleButton'
+import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup'
 
 import BuyContainer from './BuyContainer'
 import SellContainer from './SellContainer'
 
-import { RootState } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
+import { useCoinsLoading } from '../redux/selectors/coinSelectors'
 
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup'
-import ToggleButton from '@material-ui/lab/ToggleButton'
-import { CircularProgress } from '@material-ui/core'
+export const TradingActionContainer = () => {
+    const coinsLoading = useCoinsLoading()
 
-export const TradingActionContainer = (props: Props) => {
     const [toggleInput, setToggleInput] = useState('buy')
 
     const [buyLoading, setBuyLoading] = useState(false)
     const [sellLoading, setSellLoading] = useState(false)
 
-    if (props.coinsLoading !== 'success') {
+    if (coinsLoading !== 'success') {
         return (
             <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <CircularProgress size={80} />
@@ -65,15 +66,4 @@ export const TradingActionContainer = (props: Props) => {
     )
 };
 
-const mapStateToProps = (state: RootState) => ({
-    coinsLoading: state.coins.loading
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(TradingActionContainer)
+export default TradingActionContainer

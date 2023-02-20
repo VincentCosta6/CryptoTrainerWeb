@@ -1,9 +1,8 @@
-import TableCell from '@material-ui/core/TableCell'
-import TableRow from '@material-ui/core/TableRow'
-import React from 'react'
+import TableCell from '@mui/material/TableCell'
+import TableRow from '@mui/material/TableRow'
+
 import { LeveragedTradeType } from '../redux/reducers/leveragedTrade'
-import { MarketTradeType } from '../redux/reducers/marketTrades'
-import { numberWithCommasAndRounded, tickerMap } from './BalanceContainer'
+import { numberWithCommasAndRounded } from './BalanceContainer'
 
 const upColor = '#47b262'
 const downColor = '#eb5454'

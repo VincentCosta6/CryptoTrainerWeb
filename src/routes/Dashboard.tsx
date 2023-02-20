@@ -11,22 +11,26 @@ import { RootState } from '../redux/store'
 import { connect, ConnectedProps } from 'react-redux'
 
 import Dashboard from '../components/Dashboard'
+import { useMatch } from 'react-router';
 
 export const FetchUserInfo = (props: Props) => {
     const dispatch = useAppDispatch()
+    const {
+        // @ts-ignore
+        params: { hashedUser }
+    } = useMatch('/user/:hashedUser')
 
     useEffect(() => {
-        dispatch(fetchUserByUUID(props.match.params.hashedUser))
-        
+        dispatch(fetchUserByUUID(hashedUser))
         
         dispatch(fetchCoinList())
-    }, [props.match.params.hashedUser])
+    }, [hashedUser])
 
     useEffect(() => {
         if (props.coinsLoading === 'success') {
-            dispatch(fetchTradeList({ uuid: props.match.params.hashedUser, coins: props.coins }))
-            dispatch(fetchUsersCoinsByUUID({ uuid: props.match.params.hashedUser, coins: props.coins }))
-            dispatch(fetchLeveragedTradesList({ uuid: props.match.params.hashedUser, coins: props.coins }))
+            dispatch(fetchTradeList({ uuid: hashedUser, coins: props.coins }))
+            dispatch(fetchUsersCoinsByUUID({ uuid: hashedUser, coins: props.coins }))
+            dispatch(fetchLeveragedTradesList({ uuid: hashedUser, coins: props.coins }))
         }
     }, [props.coinsLoading])
 
@@ -50,11 +54,7 @@ const connector = connect(mapStateToProps)
 type PropsFromRedux = ConnectedProps<typeof connector>
 
 type Props = PropsFromRedux & {
-    match: {
-        params: {
-            hashedUser: string
-        }
-    }
+    
 }
 
 export default connector(FetchUserInfo)

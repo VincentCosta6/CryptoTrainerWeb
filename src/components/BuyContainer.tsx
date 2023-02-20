@@ -1,21 +1,25 @@
-import React, { useState } from 'react'
+import { FC, useState } from 'react'
 
-import { RootState, useAppDispatch } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
+import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import CircularProgress from '@mui/material/CircularProgress'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import InputBase from '@mui/material/InputBase'
+import Paper from '@mui/material/Paper'
+import Slider from '@mui/material/Slider'
 
 import { setDollars } from '../redux/reducers/user'
 import { setCoinQuantity } from '../redux/reducers/usersCoins'
 import { addTrade } from '../redux/reducers/trades'
 import { addLeveragedTrade } from '../redux/reducers/leveragedTrade'
-import Paper from '@material-ui/core/Paper'
-import Button from '@material-ui/core/Button'
-import InputBase from '@material-ui/core/InputBase'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import { getPriceWithProperZeroes, numberWithCommasAndRounded, tickerMap } from './BalanceContainer'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Slider from '@material-ui/core/Slider'
-import Typography from '@material-ui/core/Typography'
+
+import { useAppDispatch } from '../redux/store'
+import { useCoinMap, useSelectedCoin } from '../redux/selectors/coinSelectors'
+import { useUserDollarBalance, useUserUUID } from '../redux/selectors/userSelectors'
+import { useLastPrice } from '../redux/selectors/priceSelectors'
+import { useUserCoinBalance } from '../redux/selectors/usersCoinsSelectors'
+
+import { getPriceWithProperZeroes, numberWithCommasAndRounded } from './BalanceContainer'
 
 const leverageMap = {
     5: 5,
@@ -26,8 +30,19 @@ const leverageMap = {
     10: 150,
 }
 
-export const BuyContainer = (props: Props) => {
+interface BuyContainerProps {
+    otherActionLoading: boolean
+    buyLoading: boolean
+    setBuyLoading: Function
+}
+export const BuyContainer = (props: BuyContainerProps) => {
     const dispatch = useAppDispatch()
+
+    const coinMap = useCoinMap()
+    const selectedCrypto = useSelectedCoin()
+
+    const dollarBalance = useUserDollarBalance()
+    const userUUID = useUserUUID()
 
     const [useLeverage, setUseLeverage] = useState(false)
     const [leverage, setLeverage] = useState<number>(5)
@@ -36,19 +51,19 @@ export const BuyContainer = (props: Props) => {
 
     const handleBuy = () => {
         props.setBuyLoading(true)
-        fetch(`https://api.minecraftmarkets.com/coins/buy/${props.coinMap[props.selectedCrypto].exchange}/${props.selectedCrypto}`, {
+        fetch(`https://api.cryptotrainer.us/coins/buy/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ dollars: maxBuy ? props.dollarBalance : buyField, uuid: props.userUUID, priceAtExecution: props.lastPrice, max: maxBuy })
+            body: JSON.stringify({ dollars: maxBuy ? dollarBalance : buyField, uuid: userUUID, priceAtExecution: 0, max: maxBuy })
         })
             .then(res => res.json())
             .then(data => {
                 const updateInfo = data.data
                 dispatch(setCoinQuantity({
-                    ticker: props.selectedCrypto,
+                    ticker: selectedCrypto,
                     quantity: updateInfo.newCoinAmount
                 }))
                 dispatch(addTrade(updateInfo.trade))
@@ -65,14 +80,14 @@ export const BuyContainer = (props: Props) => {
 
     const handleLeveragedBuy = () => {
         props.setBuyLoading(true)
-        fetch(`https://api.minecraftmarkets.com/leverage/buy/${props.coinMap[props.selectedCrypto].exchange}/${props.selectedCrypto}`, {
+        fetch(`https://api.cryptotrainer.us/leverage/buy/${coinMap[selectedCrypto].exchange}/${selectedCrypto}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             // @ts-ignore
-            body: JSON.stringify({ initialMargin: maxBuy ? props.dollarBalance : buyField, leverageTimes: leverageMap[leverage], uuid: props.userUUID, priceAtExecution: props.lastPrice, max: maxBuy })
+            body: JSON.stringify({ initialMargin: maxBuy ? dollarBalance : buyField, leverageTimes: leverageMap[leverage], uuid: userUUID, priceAtExecution: 0, max: maxBuy })
         })
             .then(res => res.json())
             .then(data => {
@@ -88,21 +103,6 @@ export const BuyContainer = (props: Props) => {
                 setMaxBuy(false)
             })
     }
-
-    const price = getPriceWithProperZeroes(Number(props.lastPrice))
-    const fees = Number(buyField) * .003
-
-    const actualBuyingPower = Number(buyField) - fees
-    // @ts-ignore
-    const leveragedBuyingPower = actualBuyingPower * leverageMap[leverage]
-
-    const newCoins = useLeverage ? Number(leveragedBuyingPower) / Number(price) : Number(actualBuyingPower) / Number(price)
-
-    const newCoinBalance = Number(props.coinBalance[props.selectedCrypto] || 0) + newCoins
-    const remainingBalance = maxBuy ? 0 : props.dollarBalance - Number(buyField)
-
-    /*const newBalance = Number(props.dollarBalance) + newMoney
-    const remainingCoins =  maxSell ? 0 : Number(props.coinBalance[props.selectedCrypto]) - Number(sellField)*/
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', borderBottom: '1px solid #262d34' }}>
@@ -152,7 +152,7 @@ export const BuyContainer = (props: Props) => {
                     variant="text"
                     size="small"
                     onClick={() => {
-                        setBuyField((props.dollarBalance / 4 || 0) + "")
+                        setBuyField((dollarBalance / 4 || 0) + "")
                         setMaxBuy(false)
                     }}
                 >
@@ -163,7 +163,7 @@ export const BuyContainer = (props: Props) => {
                     variant="text"
                     size="small"
                     onClick={() => {
-                        setBuyField((props.dollarBalance / 2 || 0) + "")
+                        setBuyField((dollarBalance / 2 || 0) + "")
                         setMaxBuy(false)
                     }}
                 >
@@ -174,7 +174,7 @@ export const BuyContainer = (props: Props) => {
                     variant="text"
                     size="small"
                     onClick={() => {
-                        setBuyField((props.dollarBalance / 4 * 3 || 0) + "")
+                        setBuyField((dollarBalance / 4 * 3 || 0) + "")
                         setMaxBuy(false)
                     }}
                 >
@@ -185,7 +185,7 @@ export const BuyContainer = (props: Props) => {
                     variant="text"
                     size="small"
                     onClick={() => {
-                        setBuyField((props.dollarBalance || 0) + "")
+                        setBuyField((dollarBalance || 0) + "")
                         setMaxBuy(true)
                     }}
                 >
@@ -229,47 +229,62 @@ export const BuyContainer = (props: Props) => {
                 </Paper>
             </div>
             <div style={{ marginTop: 25 }}>
-                <div style={{ marginLeft: 7 }}>
-                    {
-                        useLeverage && (
-                            <p style={{ marginTop: 0, marginLeft: 10 }}>Leveraged buying power: ${numberWithCommasAndRounded(leveragedBuyingPower, 2)}</p>
-                        )
-                    }
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
-                    {  !useLeverage && <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: {numberWithCommasAndRounded(newCoinBalance, 6)}</p> }
-                    <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: ${numberWithCommasAndRounded(remainingBalance, 2)}</p>
-                </div>
+                {
+                    buyField !== '' && (
+                        <NewBalanceContainer 
+                            useLeverage={useLeverage}
+                            buyField={buyField}
+                            maxBuy={maxBuy}
+                            leverage={leverage}
+                        />
+                    )
+                }
             </div>
         </div>
     )
 };
 
-const mapStateToProps = (state: RootState) => ({
-    dollarBalance: state.user.dollars,
-    candlesLoading: state.price.loading,
-    coinMap: state.coins.map,
-    coinLoading: state.coins.loading,
-    selectedCrypto: state.coins.selectedCoin,
-    selectedInterval: state.price.selectedInterval,
-    subscriptions: state.price.subscriptions,
-    lastPrice: state.price.lastPrice,
-    websocketConnected: state.price.websocketConnected,
-    prices: state.price.prices,
-    pricesLoading: state.price.loading,
-    userLoading: state.user.loading,
-    userUUID: state.user.uuid,
-    coinBalance: state.usersCoins.tickers,
-    marketTrades: state.marketTrades.trades,
-    myTradesLoading: state.trades.loading,
-})
+interface NewBalanceContainer {
+    useLeverage: boolean
+    buyField: string
+    maxBuy: boolean
+    leverage: number
+}
+export const NewBalanceContainer: FC<NewBalanceContainer> = ({
+    useLeverage,
+    buyField,
+    maxBuy,
+    leverage,
+}) => {
+    const coinBalance = useUserCoinBalance()
+    const dollarBalance = useUserDollarBalance()
+    const lastPrice = useLastPrice()
+    const selectedCrypto = useSelectedCoin()
 
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
+    const price = getPriceWithProperZeroes(Number(lastPrice))
+    const fees = Number(buyField) * .003
 
-type Props = PropFromRedux & {
-    otherActionLoading: boolean
-    buyLoading: boolean
-    setBuyLoading: Function
+    const actualBuyingPower = Number(buyField) - fees
+    // @ts-ignore
+    const leveragedBuyingPower = actualBuyingPower * leverageMap[leverage]
+
+    const newCoins = useLeverage ? Number(leveragedBuyingPower) / Number(price) : Number(actualBuyingPower) / Number(price)
+
+    const newCoinBalance = Number(coinBalance[selectedCrypto] || 0) + newCoins
+    const remainingBalance = maxBuy ? 0 : dollarBalance - Number(buyField)
+
+    return (
+        <div style={{ marginLeft: 7 }}>
+            {
+                useLeverage && (
+                    <p style={{ marginTop: 0, marginLeft: 10 }}>Leveraged buying power: ${numberWithCommasAndRounded(leveragedBuyingPower, 2)}</p>
+                )
+            }
+            <p style={{ marginTop: 0, marginLeft: 10 }}>Fees: ${numberWithCommasAndRounded(fees, 2)}</p>
+            {  !useLeverage && <p style={{ marginTop: 0, marginLeft: 10 }}>New Balance: {numberWithCommasAndRounded(newCoinBalance, 6)}</p> }
+            <p style={{ marginTop: 0, marginLeft: 10 }}>Remaining: ${numberWithCommasAndRounded(remainingBalance, 2)}</p>
+        </div>
+    )
 }
 
-export default connector(BuyContainer)
+export default BuyContainer

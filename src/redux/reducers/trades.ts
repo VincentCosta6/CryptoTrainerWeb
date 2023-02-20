@@ -3,6 +3,7 @@ import { Coin } from './coins';
 import { LeveragedTradeType } from './leveragedTrade';
 
 export interface Trade {
+    _id: string
     ticker: string
     type: 'buy' | 'sell' | 'CLOSE',
     quantity: number,
@@ -31,7 +32,7 @@ interface FetchTradesPayload {
 export const fetchTradeList = createAsyncThunk(
     'trades/fetchTradeList',
     async (payload: FetchTradesPayload) => {
-        const response = await (await fetch(`https://api.minecraftmarkets.com/user/${payload.uuid}/trades`)).json();
+        const response = await (await fetch(`https://api.cryptotrainer.us/user/${payload.uuid}/trades`)).json();
 
         const defaultTradesObj = payload.coins.reduce((acc, coin: string) => {
             // @ts-ignore

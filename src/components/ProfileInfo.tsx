@@ -1,17 +1,20 @@
 import { useState } from 'react'
 
-import { RootState } from '../redux/store'
-import Person from '@material-ui/icons/Person'
+import Person from '@mui/icons-material/Person'
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-import { connect, ConnectedProps } from 'react-redux'
-import Button from '@material-ui/core/Button'
-import MenuItem from '@material-ui/core/MenuItem'
-import Menu from '@material-ui/core/Menu'
+import Button from '@mui/material/Button'
+import MenuItem from '@mui/material/MenuItem'
+import Menu from '@mui/material/Menu'
 
-const ProfileInfo = (props: Props) => {
-    const history = useHistory()
+import { useUserLoading, useUsername } from '../redux/selectors/userSelectors'
+
+const ProfileInfo = () => {
+    const navigate = useNavigate()
+
+    const userLoading = useUserLoading()
+    const username = useUsername()
 
     const [anchorEl, setAnchorEl] = useState(null)
 
@@ -24,18 +27,18 @@ const ProfileInfo = (props: Props) => {
     }
 
     const handleLogout = () => {
-        history.push('/user')
+        navigate('/user')
     }
 
-    if (props.user.loading === 'idle') {
+    if (userLoading === 'idle') {
         return <p>You are not logged in</p>
-    } else if (props.user.loading === 'pending') {
+    } else if (userLoading === 'pending') {
         return <p>Loading...</p>
-    } else if (props.user.loading === 'success') {
+    } else if (userLoading === 'success') {
         return (
             <div style={{ display: 'flex', alignItems: 'center', marginRight: 20 }}>
                 <Button aria-controls="simple-menu2" aria-haspopup="true" onClick={handleClick} style = {{ color: '#8a939f' }} endIcon={<Person />}>
-                    { props.user.username }
+                    { username }
                 </Button>
                 <Menu
                     id="simple-menu2"
@@ -53,15 +56,4 @@ const ProfileInfo = (props: Props) => {
     }
 }
 
-const mapStateToProps = (state: RootState) => ({
-    user: state.user,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(ProfileInfo)
+export default ProfileInfo

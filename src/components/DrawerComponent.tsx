@@ -1,21 +1,21 @@
-import React from 'react'
+import { FC } from 'react'
 
-import { RootState } from '../redux/store'
+import Drawer from '@mui/material/Drawer'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
 
-import Drawer from '@material-ui/core/Drawer'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
-import ListItemText from '@material-ui/core/ListItemText'
-
-import { connect, ConnectedProps } from 'react-redux'
-import { useAppDispatch } from '../redux/store'
-import { setSelectedCoin } from '../redux/reducers/coins'
-import { nameMap } from './BalanceContainer'
 import { Icon, InlineIcon } from '@iconify/react';
 import bitcoinIcon from '@iconify-icons/logos/bitcoin';
 import ethereumIcon from '@iconify-icons/logos/ethereum';
 import dogeIcon from '@iconify-icons/cryptocurrency/doge';
 
+import { nameMap } from './BalanceContainer'
+
+import { setSelectedCoin } from '../redux/reducers/coins'
+
+import { useAppDispatch } from '../redux/store'
+import { useCoinMap, useCoins } from '../redux/selectors/coinSelectors'
 
 import './DrawerComponent.scss'
 
@@ -34,23 +34,30 @@ export const CoinIcon = ({ name }: { name: string }) => {
         return <Icon icon={dogeIcon} color="#c3a636" width="2.6em" height="2.6em" />
     }
 }
-// npm install --save-dev @iconify/react @iconify-icons/logos
 
-
-
-const ProfileInfo = (props: Props) => {
+interface DrawerComponentProps {
+    open: boolean,
+    onClose: any,
+}
+const DrawerComponent: FC<DrawerComponentProps> = ({
+    open,
+    onClose,
+}) => {
     const dispatch = useAppDispatch()
 
+    const coins = useCoins()
+    const coinMap = useCoinMap()
+
     return (
-        <Drawer anchor="left" open={props.open} onClose={props.onClose}>
+        <Drawer anchor="left" open={open} onClose={onClose}>
             <List>
                 {
-                    props.coins.map(coin => 
+                    coins.map(coin => 
                         <ListItem key={coin} button onClick={() => dispatch(setSelectedCoin(coin))}>
                             { /* @ts-ignore */ }
                             { coinIconMap[coin] }
                             <div style={{ marginLeft: 5 }}>
-                                <ListItemText primary={nameMap[props.coinMap[coin].name]} />
+                                <ListItemText primary={nameMap[coinMap[coin].name]} />
                             </div>
                         </ListItem>
                     )
@@ -60,19 +67,4 @@ const ProfileInfo = (props: Props) => {
     )
 }
 
-const mapStateToProps = (state: RootState) => ({
-    user: state.user,
-    coins: state.coins.coins,
-    coinMap: state.coins.map,
-    selectedCoin: state.coins.selectedCoin,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-    open: boolean,
-    onClose: any,
-}
-
-export default connector(ProfileInfo)
+export default DrawerComponent

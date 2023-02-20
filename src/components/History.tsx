@@ -1,46 +1,32 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
 
-import { RootState, useAppDispatch } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import LeveragedTrade from './LeveragedTrade'
-import OpenTradeView from './OpenTradeView'
-import { LeveragedTradeType, removeLeveragedTrade } from '../redux/reducers/leveragedTrade';
-import Modal from '@material-ui/core/Modal';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
-import { upColor } from './chartOptions';
-import { setDollars } from '../redux/reducers/user';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import { removeLiquidations } from '../redux/reducers/liquidations';
-import Divider from '@material-ui/core/Divider';
-import TableContainer from '@material-ui/core/TableContainer';
-import Table from '@material-ui/core/Table';
-import TableHead from '@material-ui/core/TableHead';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import TableBody from '@material-ui/core/TableBody';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import TableBody from '@mui/material/TableBody';
+import TablePagination from '@mui/material/TablePagination';
 
-import './History.scss'
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import { addTrade, Trade } from '../redux/reducers/trades';
-import { MarketTradeType } from '../redux/reducers/marketTrades';
+import { Trade } from '../redux/reducers/trades';
+import { useTrades } from '../redux/selectors/tradesSelectors';
+import { useSelectedCoin } from '../redux/selectors/coinSelectors';
+import { useLastPrice } from '../redux/selectors/priceSelectors';
 import { numberWithCommasAndRounded } from './BalanceContainer';
 
-export const History = (props: Props) => {
-    const dispatch = useAppDispatch()
+import './History.scss'
+
+export const History = () => {
+    const trades = useTrades()
+    const selectedCrypto = useSelectedCoin()
+
+    const lastPrice = useLastPrice()
 
     const [page, setPage] = useState(0)
     const [tradeChosen, setTradeChosen] = useState<Trade | null>(null)
 
-    const currentTrades = props.trades[props.selectedCrypto].slice().reverse()
+    const currentTrades = trades[selectedCrypto].slice().reverse()
     const length = currentTrades.length
 
     return (
@@ -58,7 +44,7 @@ export const History = (props: Props) => {
                         </TableHead>
                         <TableBody>
                         {currentTrades.slice(page * 11, page * 11 + 11).map((trade: Trade) => (
-                            <TradeComp trade={trade} onClick={() => setTradeChosen(trade)} price={props.lastPrice} />
+                            <TradeComp key={trade._id} trade={trade} onClick={() => setTradeChosen(trade)} price={lastPrice} />
                         ))}
                         </TableBody>
                     </Table>
@@ -76,7 +62,7 @@ export const History = (props: Props) => {
                                 inputProps: { 'aria-label': 'rows per page' },
                                 native: true,
                             }}
-                            onChangePage={(event, newPage) => setPage(newPage)}
+                            onPageChange={(event, newPage) => setPage(newPage)}
                             style={{  }}
                         />
                     )
@@ -140,20 +126,4 @@ export const TradeComp = ({ trade, onClick, price }: { trade: Trade, onClick: Fu
     )
 }
 
-const mapStateToProps = (state: RootState) => ({
-    coinMap: state.coins.map,
-    uuid: state.user.uuid,
-    lastPrice: state.price.lastPrice,
-    trades: state.trades.trades,
-    tradesLoading: state.trades.loading,
-    selectedCrypto: state.coins.selectedCoin,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(History)
+export default History

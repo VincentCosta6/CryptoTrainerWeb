@@ -1,9 +1,8 @@
-import React from 'react'
+import CircularProgress from '@mui/material/CircularProgress'
 
-import { RootState } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
-
-import CircularProgress from '@material-ui/core/CircularProgress'
+import { useUserCoinBalance, useUserCoinBalanceLoading } from '../redux/selectors/usersCoinsSelectors';
+import { useCoinMap, useCoinsLoading, useSelectedCoin } from '../redux/selectors/coinSelectors';
+import { useUserDollarBalance } from '../redux/selectors/userSelectors';
 
 export function toFixed(num: any, fixed: number) {
     var re = new RegExp('^-?\\d+(?:\.\\d{0,' + (fixed || -1) + '})?');
@@ -44,8 +43,16 @@ export function getPriceWithProperZeroes(price: number | string) {
     return toFixed(pricenNum, zeroes)
 }
 
-export const BalanceContainer = (props: Props) => {
-    if (props.usersCoinsLoading !== 'success' || props.coinsLoading !== 'success' || props.selectedCrypto === '') {
+export const BalanceContainer = () => {
+    const usersCoinsLoading = useUserCoinBalanceLoading()
+    const coinsLoading = useCoinsLoading()
+    
+    const selectedCrypto = useSelectedCoin()
+    const coinMap = useCoinMap()
+    const coinBalance = useUserCoinBalance()
+    const dollarBalance = useUserDollarBalance()
+    
+    if (usersCoinsLoading !== 'success' || coinsLoading !== 'success' || selectedCrypto === '') {
         return (
             <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <CircularProgress size={80} />
@@ -55,28 +62,10 @@ export const BalanceContainer = (props: Props) => {
 
     return (
         <div style={{ borderBottom: '1px solid #262d34', marginBottom: 5, marginTop: 0 }}>
-            <h1 style={{ marginTop: 0, fontSize: '1.6rem' }}>${numberWithCommasAndRounded(Number(props.dollarBalance), 2)}</h1>
-            <h1 style={{ fontSize: '1.6rem' }}>{nameMap[props.coinMap[props.selectedCrypto].name]}: {numberWithCommasAndRounded(Number(props.coinBalance[props.selectedCrypto] || 0), 6)}</h1>
+            <h1 style={{ marginTop: 0, fontSize: '1.6rem' }}>${numberWithCommasAndRounded(Number(dollarBalance), 2)}</h1>
+            <h1 style={{ fontSize: '1.6rem' }}>{nameMap[coinMap[selectedCrypto].name]}: {numberWithCommasAndRounded(Number(coinBalance[selectedCrypto] || 0), 6)}</h1>
         </div>
     )
 };
 
-const mapStateToProps = (state: RootState) => ({
-    coinBalance: state.usersCoins.tickers,
-    coinMap: state.coins.map,
-    coinsLoading: state.coins.loading,
-    dollarBalance: state.user.dollars,
-    lastPrice: state.price.lastPrice,
-    usersCoinsBalance: state.usersCoins.tickers,
-    usersCoinsLoading: state.usersCoins.loading,
-    selectedCrypto: state.coins.selectedCoin,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-
-}
-
-export default connector(BalanceContainer)
+export default BalanceContainer

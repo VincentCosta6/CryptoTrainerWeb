@@ -1,4 +1,3 @@
-import React from 'react'
 import { MarketTradeType } from '../redux/reducers/marketTrades'
 import { numberWithCommasAndRounded } from './BalanceContainer'
 

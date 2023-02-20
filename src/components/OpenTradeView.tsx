@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import { FC } from 'react'
 
-import { RootState } from '../redux/store'
-import { connect, ConnectedProps } from 'react-redux'
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import LeveragedTrade from './LeveragedTrade'
 import { LeveragedTradeType } from '../redux/reducers/leveragedTrade';
 import { getPriceWithProperZeroes, numberWithCommasAndRounded } from './BalanceContainer';
+import { useLastPrice } from '../redux/selectors/priceSelectors';
 
-export const OpenTradeView = ({ trade, lastPrice }: Props) => {
+interface OpenTradeViewProps {
+    trade: LeveragedTradeType | null
+}
+export const OpenTradeView: FC<OpenTradeViewProps> = ({ trade }) => {
+    const lastPrice = useLastPrice()
+
     if (!trade) {
         return <p>loading</p>
     }
@@ -47,15 +47,4 @@ export const OpenTradeView = ({ trade, lastPrice }: Props) => {
     )
 };
 
-const mapStateToProps = (state: RootState) => ({
-    lastPrice: state.price.lastPrice,
-})
-
-const connector = connect(mapStateToProps)
-type PropFromRedux = ConnectedProps<typeof connector>
-
-type Props = PropFromRedux & {
-    trade: LeveragedTradeType | null
-}
-
-export default connector(OpenTradeView)
+export default OpenTradeView
